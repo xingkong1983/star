@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>jar</packaging>
+	<parent>
+		<groupId>xingkong1983.com</groupId>
+		<artifactId>star-parent</artifactId>
+		<version>1.0.0-rc</version>
+	</parent>
+
+	<artifactId>star-servlet</artifactId>
+	<name>${project.artifactId}</name>
+	<description>servlet 库。</description>
+
+	<properties>
+
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>5.2.8.RELEASE</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>xingkong1983.com</groupId>
+			<artifactId>star-core</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+
+	</build>
+</project>
