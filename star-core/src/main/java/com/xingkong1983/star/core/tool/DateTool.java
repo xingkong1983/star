@@ -47,7 +47,7 @@ public final class DateTool {
 	 * @param longTime 时间戳
 	 * @return
 	 */
-	public static Date getDate( String longTime ) {
+	public static Date getDate(String longTime) {
 		Long time = 0L;
 		try {
 			time = Long.parseLong(longTime);
@@ -66,7 +66,7 @@ public final class DateTool {
 	 * @param formatText 格式化字符串
 	 * @return
 	 */
-	public static String getString( long longTime, String formatText ) {
+	public static String getString(long longTime, String formatText) {
 		SimpleDateFormat ft = new SimpleDateFormat(formatText, Locale.CHINA);
 		ft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
 		return ft.format(longTime);
@@ -79,7 +79,7 @@ public final class DateTool {
 	 * @param formatText 格式化字符串
 	 * @return
 	 */
-	public static String getString( Date date, String formatText ) {
+	public static String getString(Date date, String formatText) {
 		SimpleDateFormat ft = new SimpleDateFormat(formatText, Locale.CHINA);
 		ft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
 		return ft.format(date);
@@ -88,26 +88,26 @@ public final class DateTool {
 	/**
 	 * 获取当前日期与时间
 	 */
-	public static String getCurrentDateTime( ) {
+	public static String getCurrentDateTime() {
 		SimpleDateFormat ft = new SimpleDateFormat(Format.DEFAULT_DATETIME, Locale.CHINA);
 		ft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
 		return ft.format(new Date());
 	}
 
 	/**
-	 * 获取当前时间的年
+	 * 获取现在是哪一年
 	 */
-	public static int getCurrentDateYear( ) {
+	public static int getCurrentDateYear() {
 		Calendar date = Calendar.getInstance();
 		return date.get(Calendar.YEAR);
 	}
 
 	/**
-	 * 获取当前时间的小时
+	 * 获取当前是几点
 	 */
-	public static int getCurrentDateHour( Long time ) {
-		Date date = new Date(time);
-		return date.getHours();
+	public static int getCurrentDateHour(Long time) {
+		Calendar date = Calendar.getInstance();
+		return date.get(Calendar.HOUR_OF_DAY);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public final class DateTool {
 	 * @param days
 	 * @return
 	 */
-	public static Date getDateAfter( Date date, int days ) {
+	public static Date getDateAfter(Date date, int days) {
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTime(date);
 		calendar.add(GregorianCalendar.DATE, days);
@@ -129,7 +129,7 @@ public final class DateTool {
 	 * 
 	 * @return
 	 */
-	public static ArrayList<String> getCurrentDateBeforeHour( int intervals ) {
+	public static ArrayList<String> getCurrentDateBeforeHour(int intervals) {
 		ArrayList<String> pastHoursList = new ArrayList<>();
 		for (int i = 0; i < intervals; i++) {
 			Calendar calendar = Calendar.getInstance();
@@ -146,7 +146,7 @@ public final class DateTool {
 	 * @param formatText 格式化字符串
 	 * @return 日期数组
 	 */
-	public static ArrayList<String> getCurrentDateBeforeDate( int intervals, String formatText ) {
+	public static ArrayList<String> getCurrentDateBeforeDate(int intervals, String formatText) {
 		ArrayList<String> pastDaysList = new ArrayList<>();
 		for (int i = 0; i < intervals; i++) {
 			pastDaysList.add(getPastDate(i, formatText));
@@ -161,7 +161,7 @@ public final class DateTool {
 	 * @param formatText 格式化字符串
 	 * @return
 	 */
-	public static String getPastDate( int past, String formatText ) {
+	public static String getPastDate(int past, String formatText) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) - past);
 		Date today = calendar.getTime();
@@ -175,7 +175,7 @@ public final class DateTool {
 	 * 
 	 * @return
 	 */
-	public static String getCurrentDateStr( ) {
+	public static String getCurrentDateStr() {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(Format.DEFAULT_DATETIME, Locale.CHINA);
 		LocalDateTime localDateTime = LocalDateTime.now();
 		String format1 = dateTimeFormatter.format(localDateTime);
@@ -187,7 +187,7 @@ public final class DateTool {
 	 * 
 	 * @return
 	 */
-	public static String getNospaceDateStr( ) {
+	public static String getNospaceDateStr() {
 		Date date = new Date();
 		String formatStr = DateTool.getString(date.getTime(), DateTool.Format.NOSPACE_DATE);
 		return formatStr;
@@ -198,7 +198,7 @@ public final class DateTool {
 	 * 
 	 * @return
 	 */
-	public static Date getDateByStr( String dateStr ) {
+	public static Date getDateByStr(String dateStr) {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(Format.DEFAULT_DATETIME, Locale.CHINA);
 		LocalDateTime localDateTime = LocalDateTime.parse(dateStr, dateTimeFormatter);
 		ZoneId zoneId = ZoneId.systemDefault();
@@ -214,7 +214,7 @@ public final class DateTool {
 	 * @param endDate   截止日期2 (格式yyyy-MM-dd)
 	 * @return
 	 */
-	public static int getMonthsBetween( Date startDate, Date endDate ) {
+	public static int getMonthsBetween(Date startDate, Date endDate) {
 		Calendar c1 = Calendar.getInstance();
 		Calendar c2 = Calendar.getInstance();
 		c1.setTime(startDate);
@@ -231,7 +231,7 @@ public final class DateTool {
 	 * @param endDate
 	 * @return
 	 */
-	public static String getDateBetween( Date beginDate, Date endDate ) {
+	public static String getDateBetween(Date beginDate, Date endDate) {
 		String data = "";
 		Calendar begin = Calendar.getInstance();
 		begin.setTime(beginDate);
@@ -263,7 +263,7 @@ public final class DateTool {
 	 * 
 	 * @return
 	 */
-	public static String getCurrentDateNoSpce( ) {
+	public static String getCurrentDateNoSpce() {
 		SimpleDateFormat ft = new SimpleDateFormat(DateTool.Format.NOSPACE_DATE);
 		return ft.format(new Date());
 	}
@@ -273,7 +273,7 @@ public final class DateTool {
 	 *
 	 * @return
 	 */
-	public static String getSignedCurrentTime( ) {
+	public static String getSignedCurrentTime() {
 		SimpleDateFormat ft = new SimpleDateFormat(DateTool.Format.DEFAULT_DATE);
 		return ft.format(new Date());
 	}
