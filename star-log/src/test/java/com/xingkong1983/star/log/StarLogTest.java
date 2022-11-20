@@ -15,6 +15,7 @@ class StarLogTest {
 			log.error("打印错误信息");
 			log.warn("打印警告信息");
 			log.debug("打印调试信息");
+			StarLog.print("這是一行測試信息");
 			i++;
 			StarLogTool.sleep(5);
 		}

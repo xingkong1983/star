@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class StarLogThread extends Thread {
 
-	private final static int MAX_QUEUE_LEN = 200;
+	private final static int MAX_QUEUE_LEN = 200000;
 	private static LinkedBlockingQueue<String> linkedBlockingQueue = new LinkedBlockingQueue<>(MAX_QUEUE_LEN);
 	private File file;
 	private Writer writer = null;
@@ -68,12 +68,13 @@ public class StarLogThread extends Thread {
 			while (!isInterrupted()) {
 				loadLogFile();
 				String message = linkedBlockingQueue.poll();
+				Long curId = Thread.currentThread().getId();
 				if (message == null) {
-					Thread.yield();
+					StarLogTool.sleepms(10);
 				} else {
 					seqId++;
 					String seqStr = String.format("%06d", seqId);
-					message = "+["+ seqStr + "] " + message;
+					message = curId+"+["+ seqStr + "] " + message;
 					writer.write( message + "\n");
 					StarLogTool.print(message);
 					writer.flush();

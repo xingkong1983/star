@@ -167,6 +167,50 @@ public class StarLog extends LegacyAbstractLogger {
 		StarLogThread.push(buf.toString());
 
 	}
+	
+	/**
+	 * 打印一行字符串
+	 * 
+	 * @param info
+	 * @param show
+	 */
+	public static void print(String info, Boolean show) {
+		
+			StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
+			StarLogMo starLogMo = new StarLogMo(stactTraceList[3], "BIZ");
+			StringBuilder buf = new StringBuilder(32);
+			buf.append(starLogMo.getHeadStr());
+			buf.append(info);
+			StarLogThread.push(buf.toString());
+			System.out.println("[starLog 1]"+buf.toString());
+		
+	}
+
+	/**
+	 * 打印一行字符串
+	 * 
+	 * @param info
+	 */
+	public static void print(String info) {
+		StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
+		StarLogMo starLogMo = new StarLogMo(stactTraceList[2], "BIZ");
+		StringBuilder buf = new StringBuilder(32);
+		buf.append(starLogMo.getHeadStr());
+		buf.append(info);
+		StarLogThread.push(buf.toString());
+		System.out.println("[starLog 2]"+buf.toString());
+		
+	}
+	
+	public static void print(Exception e) {
+		String info = StarLogTool.getErrorText(e);
+		StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
+		StarLogMo starLogMo = new StarLogMo(stactTraceList[2], "BIZ");
+		StringBuilder buf = new StringBuilder(32);
+		buf.append(starLogMo.getHeadStr());
+		buf.append(info);
+		StarLogThread.push(buf.toString());
+	}
 
 	@Override
 	protected String getFullyQualifiedCallerName() {

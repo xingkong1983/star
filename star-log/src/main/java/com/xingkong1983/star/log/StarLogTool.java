@@ -145,7 +145,7 @@ public class StarLogTool {
 	 * 
 	 * @param info
 	 */
-	public static void print(String info) {
+	protected static void print(String info) {
 		System.out.println(info);
 	}
 
