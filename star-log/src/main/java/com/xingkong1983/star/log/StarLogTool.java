@@ -2,6 +2,7 @@ package com.xingkong1983.star.log;
 
 import java.io.Closeable;
 import java.io.File;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -74,7 +75,8 @@ public class StarLogTool {
 	protected static String getCurrentPath() {
 		String appPath = "";
 		try {
-			appPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+			String URL = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+			appPath = URLDecoder.decode(URL,"UTF-8");
 			return appPath;
 		} catch (Exception e1) {
 			appPath = "./";

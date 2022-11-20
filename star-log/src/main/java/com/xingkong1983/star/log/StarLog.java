@@ -52,7 +52,7 @@ public class StarLog extends LegacyAbstractLogger {
 	}
 
 	/** The current log level */
-	protected int currentLogLevel = LOG_LEVEL_DEBUG;
+	protected int currentLogLevel = LOG_LEVEL_INFO;
 	/** The short name of this simple log instance */
 	private transient String shortLogName = null;
 
@@ -125,7 +125,7 @@ public class StarLog extends LegacyAbstractLogger {
 		ArrayList<Marker> markerList = new ArrayList();
 		markerList.add(marker);
 		StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
-		StarLogMo starLogMo = new StarLogMo(stactTraceList[4], level.name());
+		StarLogMo starLogMo = new StarLogMo( stactTraceList[4], level.name());
 		innerHandleNormalizedLoggingCall(level, starLogMo, markerList, messagePattern, arguments, throwable);
 
 	}
@@ -140,7 +140,7 @@ public class StarLog extends LegacyAbstractLogger {
 		NormalizedParameters np = NormalizedParameters.normalize(event);
 
 		StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
-		StarLogMo starLogMo = new StarLogMo(stactTraceList[4], event.getLevel().name());
+		StarLogMo starLogMo = new StarLogMo( stactTraceList[4], event.getLevel().name());
 		innerHandleNormalizedLoggingCall(event.getLevel(), starLogMo, event.getMarkers(), np.getMessage(),
 				np.getArguments(), event.getThrowable());
 	}
@@ -153,64 +153,22 @@ public class StarLog extends LegacyAbstractLogger {
 
 //		if (shortLogName == null)
 //			shortLogName = computeShortName();
-//		buf.append(String.valueOf(shortLogName)).append(" - ");
+		
 //
 //		buf.append(String.valueOf(name)).append(" - ");
 
 		buf.append(starLogMo.getHeadStr());
-
+		
+		
 		String formattedMessage = MessageFormatter.basicArrayFormat(messagePattern, arguments);
 
 		// Append the message
 		buf.append(formattedMessage);
-
-		StarLogThread.push(buf.toString());
+		StartLogEvent event = new StartLogEvent(starLogMo.getFlag(), buf.toString());
+		StarLogThread.push(event);
 
 	}
 	
-	/**
-	 * 打印一行字符串
-	 * 
-	 * @param info
-	 * @param show
-	 */
-	public static void print(String info, Boolean show) {
-		
-			StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
-			StarLogMo starLogMo = new StarLogMo(stactTraceList[3], "BIZ");
-			StringBuilder buf = new StringBuilder(32);
-			buf.append(starLogMo.getHeadStr());
-			buf.append(info);
-			StarLogThread.push(buf.toString());
-			System.out.println("[starLog 1]"+buf.toString());
-		
-	}
-
-	/**
-	 * 打印一行字符串
-	 * 
-	 * @param info
-	 */
-	public static void print(String info) {
-		StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
-		StarLogMo starLogMo = new StarLogMo(stactTraceList[2], "BIZ");
-		StringBuilder buf = new StringBuilder(32);
-		buf.append(starLogMo.getHeadStr());
-		buf.append(info);
-		StarLogThread.push(buf.toString());
-		System.out.println("[starLog 2]"+buf.toString());
-		
-	}
-	
-	public static void print(Exception e) {
-		String info = StarLogTool.getErrorText(e);
-		StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
-		StarLogMo starLogMo = new StarLogMo(stactTraceList[2], "BIZ");
-		StringBuilder buf = new StringBuilder(32);
-		buf.append(starLogMo.getHeadStr());
-		buf.append(info);
-		StarLogThread.push(buf.toString());
-	}
 
 	@Override
 	protected String getFullyQualifiedCallerName() {
