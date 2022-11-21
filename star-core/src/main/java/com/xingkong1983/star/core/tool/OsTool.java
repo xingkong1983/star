@@ -11,9 +11,18 @@ import com.xingkong1983.star.core.tool.thread.CmdThread;
 public class OsTool {
 
 	private final static int MAX_STACK_LEN = 10;
-	private static String DATE_FORMAT_FULL = "yyyy/MM/dd HH:mm:ss:SSS";
-	private static String TIME_FORMAT = "+ HH:mm:ss.SSS: ";
+	private static String TIME_FORMAT = "+ yyyy/MM/dd HH:mm:ss.SSS: ";
 
+	
+	/**
+	 * 获取当前时间字符串
+	 * @return
+	 */
+	private static String getCurrentDateTimeStr() {
+		Date curDate =  new Date();
+		return new SimpleDateFormat(TIME_FORMAT).format(curDate);
+	}
+	
 	/**
 	 * 打印一行字符串
 	 * 
@@ -21,21 +30,7 @@ public class OsTool {
 	 * @param show
 	 */
 	public static void print(String info, Boolean show) {
-
-		Date curDate =  new Date();
-		String curDateStr = new SimpleDateFormat(TIME_FORMAT).format(curDate);
-		int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
-		String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-		String fileName = Thread.currentThread().getStackTrace()[2].getFileName();
-		String className = Thread.currentThread().getStackTrace()[2].getClassName();
-		String threadName = Thread.currentThread().getName();
-		String headStr = curDateStr + threadName+" ("+fileName+":"+lineNumber+") : ";
-		
-		info = headStr + info;
-		if (show) {
-			System.out.println(info);
-			LogTool.push(info);
-		}
+		System.out.println(info);
 	}
 
 	/**
@@ -44,20 +39,7 @@ public class OsTool {
 	 * @param info
 	 */
 	public static void print(String info) {
-		Date curDate =  new Date();
-		String curDateStr = new SimpleDateFormat(TIME_FORMAT).format(curDate);
-		int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
-		String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-		String fileName = Thread.currentThread().getStackTrace()[2].getFileName();
-		String className = Thread.currentThread().getStackTrace()[2].getClassName();
-		String threadName = Thread.currentThread().getName();
-
-
-		String headStr = curDateStr + threadName+" ("+fileName+":"+lineNumber+") : ";
-		
-		info = headStr + info;
 		System.out.println(info);
-		LogTool.push(info);
 	}
 
 	/**
@@ -120,7 +102,7 @@ public class OsTool {
 	/**
 	 * 线程休息 count 毫秒 注意：这个函数不精确，用于不精确的场景
 	 * 
-	 * @param ms
+	 * @param count
 	 */
 	public static void sleepms(long count) {
 		try {

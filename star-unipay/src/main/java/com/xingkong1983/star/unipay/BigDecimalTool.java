@@ -34,7 +34,7 @@ public class BigDecimalTool {
 	/**
 	 * 输入元的字符串，返回分为单位的字符串
 	 * 
-	 * @param baseFee
+	 * @param feeStr
 	 * @return
 	 */
 	public static BigDecimal getYuan(String feeStr) {

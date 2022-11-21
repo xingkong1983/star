@@ -15,8 +15,7 @@ public class MultipartFileTool {
 	 * 上传图片
 	 * 
 	 * @param multiFile
-	 * @param name
-	 * @return
+	 * @param fileName
 	 */
 	public static void save(MultipartFile multiFile, String fileName) {
 		try {
