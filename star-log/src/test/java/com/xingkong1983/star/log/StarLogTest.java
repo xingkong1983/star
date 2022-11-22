@@ -20,7 +20,7 @@ class StarLogTest {
 			log.debug("用户的验证码时："+code);
 			//StarLog.print("這是一行測試信息");
 			i++;
-			
+			StarLogTool.sleep(1);
 		}
 		System.out.print("测试结束");
 	}

@@ -26,26 +26,15 @@ public class StarLogMo {
 		this.fileName = stackTrace.getFileName();
 		this.className = stackTrace.getClassName();
 		this.threadName = Thread.currentThread().getName();
-		this.threadId = String.format("t%04d", Thread.currentThread().getId()) ;
+		this.threadId = String.format("t%04d", Thread.currentThread().getId());
 		this.levelNameStr = String.format("%-5s", levelName);
-
-<<<<<<< .mine
-		this.headStr = levelNameStr + SPACE + curDateStr + SPACE +threadId+":"+ threadName + " (" + fileName + ":" + lineNumber
-
-
-
-
-
-
-=======
 		if (className.contains("biz")) {
 			flag = StartLogEvent.FLAG_BUSINESS;
 		} else {
 			flag = StartLogEvent.FLAG_LOG;
 		}
 
-		this.headStr = levelNameStr + SPACE + curDateStr + SPACE + threadName + " (" + fileName + ":" + lineNumber
->>>>>>> .theirs
-				+ ") : ";
+		this.headStr = levelNameStr + SPACE + curDateStr + SPACE + threadId + ":" + threadName;
+		this.headStr += " (" + fileName + ":" + lineNumber + ") : ";
 	}
 }
