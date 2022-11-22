@@ -15,16 +15,11 @@ public class StarLog extends LegacyAbstractLogger {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final long START_TIME = System.currentTimeMillis();
-
 	protected static final int LOG_LEVEL_TRACE = LocationAwareLogger.TRACE_INT;
 	protected static final int LOG_LEVEL_DEBUG = LocationAwareLogger.DEBUG_INT;
 	protected static final int LOG_LEVEL_INFO = LocationAwareLogger.INFO_INT;
 	protected static final int LOG_LEVEL_WARN = LocationAwareLogger.WARN_INT;
 	protected static final int LOG_LEVEL_ERROR = LocationAwareLogger.ERROR_INT;
-
-	static char SP = ' ';
-	static final String TID_PREFIX = "tid=";
 
 	// The OFF level can only be used in configuration files to disable logging.
 	// It has
@@ -53,8 +48,7 @@ public class StarLog extends LegacyAbstractLogger {
 
 	/** The current log level */
 	protected int currentLogLevel = LOG_LEVEL_DEBUG;
-	/** The short name of this simple log instance */
-	private transient String shortLogName = null;
+
 
 	/**
 	 * Package access allows only {@link StarLogFactory} to instantiate StarLog
@@ -105,8 +99,6 @@ public class StarLog extends LegacyAbstractLogger {
 		return isLevelEnabled(LOG_LEVEL_ERROR);
 	}
 
-
-
 	/**
 	 * StarLog's implementation of
 	 * {@link org.slf4j.helpers.AbstractLogger#handleNormalizedLoggingCall(Level, Marker, String, Object[], Throwable)
@@ -122,7 +114,7 @@ public class StarLog extends LegacyAbstractLogger {
 	@Override
 	protected void handleNormalizedLoggingCall(Level level, Marker marker, String messagePattern, Object[] arguments,
 			Throwable throwable) {
-		ArrayList<Marker> markerList = new ArrayList();
+		ArrayList<Marker> markerList = new ArrayList<Marker>();
 		markerList.add(marker);
 		StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
 		StarLogMo starLogMo = new StarLogMo(stactTraceList[4], level.name());
@@ -160,7 +152,9 @@ public class StarLog extends LegacyAbstractLogger {
 		buf.append(starLogMo.getHeadStr());
 
 		String formattedMessage = MessageFormatter.basicArrayFormat(messagePattern, arguments);
-
+		if (formattedMessage.length() > 50) {
+			buf.append("\n");
+		}
 		// Append the message
 		buf.append(formattedMessage);
 

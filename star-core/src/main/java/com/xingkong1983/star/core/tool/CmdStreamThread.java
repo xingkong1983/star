@@ -1,4 +1,4 @@
-package com.xingkong1983.star.core.tool.thread;
+package com.xingkong1983.star.core.tool;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-import com.xingkong1983.star.core.tool.OsTool;
-
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class StreamThread extends Thread {
+@EqualsAndHashCode(callSuper = true)
+public class CmdStreamThread extends Thread {
 	private InputStream stream;
 	private String result="";
 
@@ -29,7 +29,7 @@ public class StreamThread extends Thread {
 		OsTool.print("StreamThread-"+this.getId()+" is end.");
 	}
 
-	public StreamThread(InputStream stream) {
+	public CmdStreamThread(InputStream stream) {
 		this.stream = stream;
 	}
 }

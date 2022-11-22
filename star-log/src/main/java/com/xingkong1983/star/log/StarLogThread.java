@@ -37,19 +37,19 @@ public class StarLogThread extends Thread {
 			this.path = StarLogTool.getCurrentPath() + "logs/";
 			StarLogTool.createDir(this.path);
 			logName = path + this.lastDay + ".log";
-			StarLogTool.print("");
+
 			StarLogTool.print("----------------------------------------");
 			StarLogTool.print("StarLog logName: \n" +logName);
 			StarLogTool.print("----------------------------------------");
-			StarLogTool.print("");
+
 			this.file = new File(logName);
 			this.writer = new FileWriter(file, Charset.forName("utf-8"), true);
-			this.writer.write("\n----------------------------------------\n");
-			StarLogTool.print("\n----------------------------------------");
+			this.writer.write("----------------------------------------\n");
+			StarLogTool.print("----------------------------------------");
 			this.writer.write("StarLog begin.         \n");
 			StarLogTool.print("StarLog begin.           ");
-			this.writer.write("----------------------------------------\n\n");
-			StarLogTool.print("----------------------------------------\n");
+			this.writer.write("----------------------------------------\n");
+			StarLogTool.print("----------------------------------------");
 			this.writer.flush();
 			System.out.flush();
 			

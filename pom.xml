@@ -19,6 +19,7 @@
 		<module>star-core</module>
 		<module>star-servlet</module>
 		<module>star-unipay</module>
+		<module>star-git</module>
 	</modules>
 
 	<properties>

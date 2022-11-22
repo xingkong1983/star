@@ -7,13 +7,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.util.StringUtils;
 
-import com.xingkong1983.star.core.tool.OsTool;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ServeletTool {
 	/**
 	 * 是否是Ajax异步请求
 	 */
-	public static boolean isAjax(HttpServletRequest request, String path) {
+	public static boolean isAjax( HttpServletRequest request, String path ) {
 		String accept = request.getHeader("accept");
 		if (accept != null && accept.indexOf("application/json") != -1) {
 			return true;
@@ -41,7 +42,7 @@ public class ServeletTool {
 	 * @param response
 	 * @param content
 	 */
-	public static void writeJson(HttpServletResponse response, String content) {
+	public static void writeJson( HttpServletResponse response, String content ) {
 		try {
 			// 设置将字符以"UTF-8"编码输出到客户端浏览器
 			response.setCharacterEncoding("UTF-8");
@@ -50,7 +51,7 @@ public class ServeletTool {
 			response.setHeader("content-type", "text/html;charset=UTF-8");
 			out.write(content);
 		} catch (Exception e) {
-			OsTool.print(e);
+			log.error("", e);
 		}
 	}
 
@@ -60,7 +61,7 @@ public class ServeletTool {
 	 * @param response
 	 * @param content
 	 */
-	public static void writeJs(HttpServletResponse response, String content) {
+	public static void writeJs( HttpServletResponse response, String content ) {
 		try {
 			// 设置将字符以"UTF-8"编码输出到客户端浏览器
 			response.setCharacterEncoding("UTF-8");
@@ -71,7 +72,7 @@ public class ServeletTool {
 			out.flush();
 			out.close();
 		} catch (Exception e) {
-			OsTool.print(e);
+			log.error("", e);
 		}
 	}
 }

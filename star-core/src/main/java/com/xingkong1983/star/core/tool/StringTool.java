@@ -6,12 +6,14 @@ public class StringTool {
 
 	private final static String NULL_STR = "null";
 
+
 	/**
 	 * 文本是 null, "", "Null", "null" 等无意义的字符
+	 * 
 	 * @param text
 	 * @return
 	 */
-	public static boolean isEmpty(String text) {
+	public static boolean isEmpty( String text ) {
 		if (text == null || text.trim().length() == 0 || NULL_STR.toLowerCase().trim().equals(text)) {
 			return true;
 		} else {
@@ -21,10 +23,11 @@ public class StringTool {
 
 	/**
 	 * 文本非空
+	 * 
 	 * @param text
 	 * @return
 	 */
-	public static boolean isNotEmpty(String text) {
+	public static boolean isNotEmpty( String text ) {
 		return !isEmpty(text);
 	}
 
@@ -35,13 +38,14 @@ public class StringTool {
 			return true;
 		}
 	}
+
 	/**
 	 * Description: 驼峰文本转下划线文本
 	 * 
 	 * @param text
 	 * @return
 	 */
-	public static String toUnderline(String text) {
+	public static String toUnderline( String text ) {
 
 		if (text == null || "".equals(text.trim())) {
 			return "";
@@ -60,4 +64,7 @@ public class StringTool {
 		}
 		return sb.toString();
 	}
+
+	
+
 }

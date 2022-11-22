@@ -1,4 +1,4 @@
-package com.xingkong1983.star.core.plugin;
+package com.xingkong1983.star.core.tool;
 
 import com.alibaba.fastjson.JSON;
 

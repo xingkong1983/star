@@ -9,6 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.xingkong1983.star.core.tool.OsTool;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class MultipartFileTool {
 
 	/**
@@ -24,9 +27,9 @@ public class MultipartFileTool {
 				f.mkdirs();
 			}
 			multiFile.transferTo(f);
-			OsTool.print(multiFile.getOriginalFilename());
+			log.info(multiFile.getOriginalFilename());
 		} catch (Exception e) {
-			OsTool.print(e);
+			log.error("", e);
 		}
 	}
 
@@ -48,7 +51,7 @@ public class MultipartFileTool {
 			in.read(data);
 			in.close();
 		} catch (IOException e) {
-			OsTool.print(e);
+			log.error("", e);
 		} finally {
 			OsTool.close(in);
 		}
@@ -73,7 +76,7 @@ public class MultipartFileTool {
 			in.read(data);
 			in.close();
 		} catch (IOException e) {
-			OsTool.print(e);
+			log.error("",e);
 		}
 		return Base64.getEncoder().encodeToString(data);
 	}

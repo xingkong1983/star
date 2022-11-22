@@ -10,11 +10,12 @@ class StarLogTest {
 	@Test
 	void testLog() {
 		int i = 0;
+		int code = 4;
 		while (i < 10000) {
-			log.info("打印信息信息");
-			log.error("打印错误信息");
-			log.warn("打印警告信息");
-			log.debug("打印调试信息");
+			log.info("程序启动了");
+			log.error("用户XXX登录失败了");
+			log.warn("用户XXX登录次数过多");
+			log.debug("用户的验证码时："+code);
 			i++;
 			StarLogTool.sleep(5);
 		}

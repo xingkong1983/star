@@ -24,10 +24,10 @@ public class StarLogMo {
 		this.fileName = stackTrace.getFileName();
 		this.className = stackTrace.getClassName();
 		this.threadName = Thread.currentThread().getName();
-		this.threadId = "" + Thread.currentThread().getId();
+		this.threadId = String.format("t%04d", Thread.currentThread().getId()) ;
 		this.levelNameStr = String.format("%-5s", levelName);
 
-		this.headStr = levelNameStr + SPACE + curDateStr + SPACE + threadName + " (" + fileName + ":" + lineNumber
+		this.headStr = levelNameStr + SPACE + curDateStr + SPACE +threadId+":"+ threadName + " (" + fileName + ":" + lineNumber
 				+ ") : ";
 	}
 }

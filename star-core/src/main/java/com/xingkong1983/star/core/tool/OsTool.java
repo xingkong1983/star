@@ -1,35 +1,20 @@
 package com.xingkong1983.star.core.tool;
 
-
 import java.io.Closeable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Scanner;
-
-import com.xingkong1983.star.core.tool.thread.CmdThread;
 
 public class OsTool {
 
 	private final static int MAX_STACK_LEN = 10;
-	private static String TIME_FORMAT = "+ yyyy/MM/dd HH:mm:ss.SSS: ";
 
-	
-	/**
-	 * 获取当前时间字符串
-	 * @return
-	 */
-	private static String getCurrentDateTimeStr() {
-		Date curDate =  new Date();
-		return new SimpleDateFormat(TIME_FORMAT).format(curDate);
-	}
-	
+
 	/**
 	 * 打印一行字符串
 	 * 
 	 * @param info
 	 * @param show
 	 */
-	public static void print(String info, Boolean show) {
+	protected static void print( String info, Boolean show ) {
 		System.out.println(info);
 	}
 
@@ -38,7 +23,7 @@ public class OsTool {
 	 * 
 	 * @param info
 	 */
-	public static void print(String info) {
+	protected static void print( String info ) {
 		System.out.println(info);
 	}
 
@@ -47,7 +32,7 @@ public class OsTool {
 	 * 
 	 * @return
 	 */
-	public static String readLine() {
+	protected static String readLine( ) {
 		Scanner input = new Scanner(System.in);
 		String result = input.nextLine();
 		input.close();
@@ -59,7 +44,7 @@ public class OsTool {
 	 * 
 	 * @param e
 	 */
-	public static void print(Exception e) {
+	protected static void print( Exception e ) {
 		System.out.println(getErrorText(e));
 	}
 
@@ -69,7 +54,7 @@ public class OsTool {
 	 * @param e 异常对象
 	 * @return
 	 */
-	public static String getErrorText(Exception e) {
+	public static String getErrorText( Exception e ) {
 		StackTraceElement[] stack = e.getStackTrace();
 		StringBuilder textLine = new StringBuilder("\r\n\r\n");
 		textLine.append("ERR: " + e.getMessage() + "\r\n");
@@ -88,7 +73,7 @@ public class OsTool {
 	 * 
 	 * @param count 休息的秒数
 	 */
-	public static void sleep(int count) {
+	public static void sleep( int count ) {
 		int i = count;
 		try {
 			while (i > 0) {
@@ -104,7 +89,7 @@ public class OsTool {
 	 * 
 	 * @param count
 	 */
-	public static void sleepms(long count) {
+	public static void sleepms( long count ) {
 		try {
 			Thread.sleep(count);
 		} catch (Exception e) {
@@ -116,7 +101,7 @@ public class OsTool {
 	 * 
 	 * @param obj Closeable对象
 	 */
-	public static void close(Closeable obj) {
+	public static void close( Closeable obj ) {
 		if (obj != null) {
 			try {
 				obj.close();
@@ -125,13 +110,13 @@ public class OsTool {
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * 关闭 AutoCloseable 对象
+	 * 
 	 * @param obj AutoCloseable 对象
 	 */
-	public static void close(AutoCloseable obj) {
+	public static void close( AutoCloseable obj ) {
 		if (obj != null) {
 			try {
 				obj.close();
@@ -140,26 +125,7 @@ public class OsTool {
 			}
 		}
 	}
-	
-	
-	/**
-	 * 
-	 * @param cmdText
-	 * @return
-	 */
 
-	public static String exec(String cmdText) {
-		CmdThread cmdThread = new CmdThread(cmdText);
-
-		cmdThread.start();
-		OsTool.print("ThreadID:" + cmdThread.getId());
-		try {
-			cmdThread.join();
-		} catch (InterruptedException e) {
-			OsTool.print(e);
-		}
-		OsTool.print("执行完毕");
-		return cmdThread.getOutText();
-	}
 	
+
 }
