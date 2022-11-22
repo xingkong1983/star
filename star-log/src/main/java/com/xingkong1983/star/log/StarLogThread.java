@@ -1,29 +1,23 @@
 package com.xingkong1983.star.log;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.text.MessageFormat;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class StarLogThread extends Thread {
 
-	private final static int MAX_QUEUE_LEN = 200;
-	private static LinkedBlockingQueue<String> linkedBlockingQueue = new LinkedBlockingQueue<>(MAX_QUEUE_LEN);
-	private File file;
-	private Writer writer = null;
-	private String logName;
-	private String path;
-	private long lastDay = 0;
+	private final static int MAX_QUEUE_LEN = 200000;
+	private static LinkedBlockingQueue<StartLogEvent> linkedBlockingQueue = new LinkedBlockingQueue<>(MAX_QUEUE_LEN);
 
-	public static void push(String message) {
-		if (!linkedBlockingQueue.offer(message)) {
+	StarLogFile logFile;
+	StarLogFile bizFile;
+
+	public static void push(StartLogEvent event) {
+		if (!linkedBlockingQueue.offer(event)) {
 			StarLogTool.print("log lost.");
 		}
 	}
 
+<<<<<<< .mine
 	/**
 	 * 加载日志
 	 * 
@@ -57,6 +51,41 @@ public class StarLogThread extends Thread {
 
 	}
 
+=======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> .theirs
 	@Override
 	public void run() {
 		long seqId = 0;
@@ -64,29 +93,37 @@ public class StarLogThread extends Thread {
 		try {
 
 			// 比较日期是否已经发生变化，如果日期发生了变化，新起一个文件
-
+			logFile = new StarLogFile("log");
+			bizFile = new StarLogFile("biz");
 			while (!isInterrupted()) {
-				loadLogFile();
-				String message = linkedBlockingQueue.poll();
-				if (message == null) {
+				logFile.load();
+				bizFile.load();
+				StartLogEvent event = linkedBlockingQueue.poll();
+				Long curId = Thread.currentThread().getId();
+				if (event == null) {
+					// StarLogTool.sleepms(10);
 					Thread.yield();
 				} else {
 					seqId++;
 					String seqStr = String.format("%06d", seqId);
-					message = "+["+ seqStr + "] " + message;
-					writer.write( message + "\n");
-					StarLogTool.print(message);
-					writer.flush();
-					System.out.flush();
+					String message = "+[" + seqStr + "] " + event.getMessage();
+					logFile.write(message,true);
+					if (StartLogEvent.FLAG_BUSINESS == event.getFlag()) {
+						bizFile.write(message,false);
+					}
+					logFile.flush(true);
+					bizFile.flush(false);
+
 				}
 			}
-			writer.flush();
+
 		} catch (IOException e) {
 			StarLogTool.print("[starLog]日志文件不能打开，没有记录日志");
 			StarLogTool.print(e);
 			return;
 		} finally {
-			StarLogTool.close(writer);
+			logFile.close();
+			bizFile.close();
 		}
 		StarLogTool.print("[StarLog] End.          ");
 		System.out.flush();
@@ -95,5 +132,6 @@ public class StarLogThread extends Thread {
 	public static void begin() {
 		StarLogThread logTool = new StarLogThread();
 		logTool.start();
+		
 	}
 }

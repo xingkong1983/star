@@ -47,7 +47,7 @@ public class StarLog extends LegacyAbstractLogger {
 	}
 
 	/** The current log level */
-	protected int currentLogLevel = LOG_LEVEL_DEBUG;
+	protected int currentLogLevel = LOG_LEVEL_INFO;
 
 
 	/**
@@ -117,7 +117,7 @@ public class StarLog extends LegacyAbstractLogger {
 		ArrayList<Marker> markerList = new ArrayList<Marker>();
 		markerList.add(marker);
 		StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
-		StarLogMo starLogMo = new StarLogMo(stactTraceList[4], level.name());
+		StarLogMo starLogMo = new StarLogMo( stactTraceList[4], level.name());
 		innerHandleNormalizedLoggingCall(level, starLogMo, markerList, messagePattern, arguments, throwable);
 
 	}
@@ -132,7 +132,7 @@ public class StarLog extends LegacyAbstractLogger {
 		NormalizedParameters np = NormalizedParameters.normalize(event);
 
 		StackTraceElement[] stactTraceList = Thread.currentThread().getStackTrace();
-		StarLogMo starLogMo = new StarLogMo(stactTraceList[4], event.getLevel().name());
+		StarLogMo starLogMo = new StarLogMo( stactTraceList[4], event.getLevel().name());
 		innerHandleNormalizedLoggingCall(event.getLevel(), starLogMo, event.getMarkers(), np.getMessage(),
 				np.getArguments(), event.getThrowable());
 	}
@@ -145,22 +145,24 @@ public class StarLog extends LegacyAbstractLogger {
 
 //		if (shortLogName == null)
 //			shortLogName = computeShortName();
-//		buf.append(String.valueOf(shortLogName)).append(" - ");
+		
 //
 //		buf.append(String.valueOf(name)).append(" - ");
 
 		buf.append(starLogMo.getHeadStr());
-
+		
+		
 		String formattedMessage = MessageFormatter.basicArrayFormat(messagePattern, arguments);
 		if (formattedMessage.length() > 50) {
 			buf.append("\n");
 		}
 		// Append the message
 		buf.append(formattedMessage);
-
-		StarLogThread.push(buf.toString());
+		StartLogEvent event = new StartLogEvent(starLogMo.getFlag(), buf.toString());
+		StarLogThread.push(event);
 
 	}
+	
 
 	@Override
 	protected String getFullyQualifiedCallerName() {

@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class StarLogMo {
+
 	private static char SPACE = ' ';
 	private String curDateStr;
 	private int lineNumber;
@@ -14,6 +15,7 @@ public class StarLogMo {
 	private String threadId;
 	private String headStr;
 	private String levelNameStr;
+	private int flag;
 
 	public StarLogMo(StackTraceElement stackTrace, String levelName) {
 
@@ -27,7 +29,23 @@ public class StarLogMo {
 		this.threadId = String.format("t%04d", Thread.currentThread().getId()) ;
 		this.levelNameStr = String.format("%-5s", levelName);
 
+<<<<<<< .mine
 		this.headStr = levelNameStr + SPACE + curDateStr + SPACE +threadId+":"+ threadName + " (" + fileName + ":" + lineNumber
+
+
+
+
+
+
+=======
+		if (className.contains("biz")) {
+			flag = StartLogEvent.FLAG_BUSINESS;
+		} else {
+			flag = StartLogEvent.FLAG_LOG;
+		}
+
+		this.headStr = levelNameStr + SPACE + curDateStr + SPACE + threadName + " (" + fileName + ":" + lineNumber
+>>>>>>> .theirs
 				+ ") : ";
 	}
 }
