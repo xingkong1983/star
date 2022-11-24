@@ -2,7 +2,7 @@ package com.xgitlink.lib.git.mo;
 
 import java.util.List;
 
-import com.xingkong1983.star.core.tool.IPrint;
+import com.xingkong1983.star.core.print.IPrint;
 
 import lombok.Data;
 

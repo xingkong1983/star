@@ -67,6 +67,20 @@ public class OsTool {
 		textLine.append("\r\n");
 		return textLine.toString() + e.toString() + "\r\n";
 	}
+	
+	public static String getErrorText( Throwable e ) {
+		StackTraceElement[] stack = e.getStackTrace();
+		StringBuilder textLine = new StringBuilder("\r\n\r\n");
+		textLine.append("ERR: " + e.getMessage() + "\r\n");
+		int len = stack.length < MAX_STACK_LEN ? stack.length : MAX_STACK_LEN;
+		for (int i = 0; i < len; i++) {
+			StackTraceElement s = stack[i];
+			textLine.append(
+					String.format("[%02d] %s - (%s:%s)\r\n", i, s.getMethodName(), s.getFileName(), s.getLineNumber()));
+		}
+		textLine.append("\r\n");
+		return textLine.toString() + e.toString() + "\r\n";
+	}
 
 	/**
 	 * 线程休息 count 秒 注意：这个函数不精确，用于不精确的场景

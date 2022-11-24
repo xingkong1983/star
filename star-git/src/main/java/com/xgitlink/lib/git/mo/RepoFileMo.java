@@ -3,7 +3,7 @@ package com.xgitlink.lib.git.mo;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
-import com.xingkong1983.star.core.tool.IPrint;
+import com.xingkong1983.star.core.print.IPrint;
 
 import lombok.Data;
 

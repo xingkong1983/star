@@ -15,8 +15,8 @@
 	<modules>
 		<module>star-blank</module>
 		<module>star-log</module>
-		<module>star-log-test</module>
 		<module>star-core</module>
+		<module>star-biz</module>
 		<module>star-servlet</module>
 		<module>star-unipay</module>
 		<module>star-git</module>
