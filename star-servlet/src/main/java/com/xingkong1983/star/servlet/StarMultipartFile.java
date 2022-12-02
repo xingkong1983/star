@@ -88,9 +88,6 @@ public class StarMultipartFile implements IPrint {
 
 	/**
 	 * 判断是否是图片
-	 * 
-	 * @param file
-	 * @return
 	 */
 	public boolean isImage( ) {
 		if (type != StarFileType.IMG.getValue()) {
@@ -129,24 +126,17 @@ public class StarMultipartFile implements IPrint {
 
 	/**
 	 * 保存图片文件
-	 * 
-	 * @throws IllegalStateException
-	 * @throws IOException
 	 */
 	public void saveImage( ) {
 		Boolean isImage = isImage();
 		BizTool.ASSERT_FILE.isTrue(isImage, "图片格式不对");
 		save();
-
 	}
 
 	/**
 	 * 保存文档文件
-	 * 
-	 * @throws IOException
-	 * @throws IllegalStateException
 	 */
-	public void saveDoc( ) throws IllegalStateException, IOException {
+	public void saveDoc( ) {
 		Boolean isDoc = isDoc();
 		BizTool.ASSERT_FILE.isTrue(isDoc, "文档格式不对");
 		save();
@@ -154,9 +144,6 @@ public class StarMultipartFile implements IPrint {
 
 	/**
 	 * 保存文件
-	 * 
-	 * @throws IllegalStateException
-	 * @throws IOException
 	 */
 	public void save( ) {
 		File f = new File(this.fullPath);
@@ -174,11 +161,11 @@ public class StarMultipartFile implements IPrint {
 			BizTool.ASSERT_FILE.throwException("文件保存失败:" + f.getName());
 		}
 	}
-	
+
 	/**
 	 * 删除文件
 	 */
-	public void delete() {
+	public void delete( ) {
 		FileTool.delete(this.fullPath);
 	}
 
