@@ -11,6 +11,7 @@ public class StarLogFile {
 	private File file;
 	private Writer writer = null;
 	private String logName;
+	private String logFullName;
 	private String path;
 	private long lastDay = 0;
 
@@ -30,10 +31,10 @@ public class StarLogFile {
 			StarLogTool.close(writer);
 			this.path = StarLogTool.getCurrentPath() + "../logs/";
 			StarLogTool.createDir(this.path);
-			logName = path + this.lastDay + logName;
+			logFullName = path + this.lastDay + logName;
 			StarLogTool.print("");
 			StarLogTool.print("----------------------------------------");
-			StarLogTool.print("[StarLog] logName: \n" + logName);
+			StarLogTool.print("[StarLog] logFullName: \n" + logFullName);
 			StarLogTool.print("----------------------------------------");
 			StarLogTool.print("");
 			this.file = new File(logName);

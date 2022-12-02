@@ -40,7 +40,7 @@ public class StarLogThread extends Thread {
 					String message = "+[" + seqStr + "] " + event.getMessage();
 					logFile.write(message, true);
 					if (StartLogEvent.FLAG_BUSINESS == event.getFlag()) {
-						bizFile.write(message, false);
+						bizFile.write(message, true);
 					}
 					logFile.flush(true);
 					bizFile.flush(false);
