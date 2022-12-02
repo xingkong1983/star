@@ -25,14 +25,14 @@ public class BizApi {
 	 * @param password
 	 * @return
 	 */
-	public BizResponseVo login( String userName, String password, int count ) {
+	public BizResponseVo login( String userName, String password ) {
 
 		BizTool.ASSERT_FORM.notNull(userName, "用户名不能为空");
 		BizTool.ASSERT_FORM.notNull(password, "密码不能为空");
 
 		
 		// 权限对不对
-		BizResponseVo res = bizService.login(userName, password, count);
+		BizResponseVo res = bizService.login(userName, password);
 		return res;
 	}
 }

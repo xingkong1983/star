@@ -28,8 +28,6 @@ class BizToolTest {
 
 		resVo = bizGlobalHandler.login("root", null);
 		log.info(resVo.toJson());
-		
-
 	}
 
 
