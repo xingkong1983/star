@@ -17,7 +17,12 @@ public class BizSortForm {
 	 */
 	private Boolean isAsc;
 
-	public void setColumnName( String columnName ) {
+	/**
+	 * 设置列名
+	 * 
+	 * @param columnName 列名
+	 */
+	public void setColumnName(String columnName) {
 		this.columnName = StringTool.toUnderline(columnName);
 	}
 

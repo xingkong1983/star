@@ -4,9 +4,7 @@ import java.util.Date;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson2.annotation.JSONField;
-import com.xingkong1983.star.biz.BizException;
 import com.xingkong1983.star.core.print.IPrint;
-import com.xingkong1983.star.core.tool.OsTool;
 
 import lombok.Data;
 
@@ -38,47 +36,10 @@ public class BizResponseVo implements IPrint {
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date time;
 
-	public static BizResponseVo ok( String message ) {
-		BizResponseVo resVo = new BizResponseVo(200, message, "", null);
-		return resVo;
-	}
-
-	public static BizResponseVo ok( Object data ) {
-		BizResponseVo resVo = new BizResponseVo(200, "ok.", "", data);
-		return resVo;
-	}
-
-	public static BizResponseVo ok( String message, Object data ) {
-		BizResponseVo resVo = new BizResponseVo(200, message, "", data);
-		return resVo;
-	}
-
-	public static BizResponseVo error( String message ) {
-		BizResponseVo resVo = new BizResponseVo(500, message, "", null);
-		return resVo;
-	}
-
-	public static BizResponseVo error( Object data ) {
-		BizResponseVo resVo = new BizResponseVo(500, "err.", "", data);
-		return resVo;
-	}
-
-	public static BizResponseVo error( String message, Object data ) {
-		BizResponseVo resVo = new BizResponseVo(500, message, "", data);
-		return resVo;
-	}
-
-	public static BizResponseVo error( BizException e ) {
-
-		BizResponseVo resVo = new BizResponseVo(e.getCode(), e.getMessage(), OsTool.getErrorText(e), null);
-		return resVo;
-	}
-
-	public static BizResponseVo error( Object data, BizException e ) {
-		BizResponseVo resVo = new BizResponseVo(500, "err.", OsTool.getErrorText(e), data);
-		return resVo;
-	}
-
+	/**
+	 * 构造函数
+	 * @param code 代码
+	 */
 	public BizResponseVo(int code) {
 		this.code = code;
 		this.data = null;
@@ -87,6 +48,11 @@ public class BizResponseVo implements IPrint {
 		this.time = new Date();
 	}
 
+	/**
+	 * 构造函数
+	 * @param code 代码
+	 * @param message 消息
+	 */
 	public BizResponseVo(int code, String message) {
 		this.code = code;
 		this.message = message;
@@ -95,14 +61,12 @@ public class BizResponseVo implements IPrint {
 		this.time = new Date();
 	}
 
-	public BizResponseVo(int code, Object data) {
-		this.code = code;
-		this.data = data;
-		this.log = "";
-		this.message = "";
-		this.time = new Date();
-	}
-
+	/**
+	 * 构造函数
+	 * @param code 代码
+	 * @param message 消息
+	 * @param data 数据
+	 */
 	public BizResponseVo(int code, String message, Object data) {
 		this.code = code;
 		this.data = data;
@@ -111,6 +75,13 @@ public class BizResponseVo implements IPrint {
 		this.time = new Date();
 	}
 
+	/**
+	 * 构造函数
+	 * @param code 代码
+	 * @param message 消息
+	 * @param log 日志
+	 * @param data 数据
+	 */
 	public BizResponseVo(int code, String message, String log, Object data) {
 		this.code = code;
 		this.log = log;
@@ -118,8 +89,46 @@ public class BizResponseVo implements IPrint {
 		this.data = data;
 		this.time = new Date();
 	}
+	
+	/**
+	 * 成功
+	 * @param message 消息
+	 * @return
+	 */
+	public BizResponseVo success(String message) {
+		return error(message,null);
+	}
+	
+	/**
+	 * 成功
+	 * @param message  消息
+	 * @param data
+	 * @return
+	 */
+	public BizResponseVo success(String message, Object data) {
+		this.message = message;
+		this.data = data;
+		return this;
+	}
+	
 
-	public String toJson( ) {
+	public BizResponseVo error(String message) {
+		return error(message,null);
+	}
+	
+	public BizResponseVo error(String message, Object data) {
+		this.message = message;
+		this.data = data;
+		return this;
+	}
+	
+	public BizResponseVo error(String message, Exception e) {
+		this.message = message;
+		this.log = e.getMessage();
+		return this;
+	}
+
+	public String toJson() {
 		String simpleName = this.getClass().getSimpleName();
 		String className = this.getClass().getName();
 		String json = JSON.toJSONString(this, true);

@@ -9,6 +9,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class BizPageResponseVo extends BizResponseVo implements IPrint {
 
+	/**
+	 * 构造函数
+	 * @param code 错误编码
+	 * @param message 消息
+	 * @param log 日志
+	 * @param data 数据
+	 */
 	public BizPageResponseVo(int code, String message, String log, Object data) {
 		super(code, message, log, data);
 	}

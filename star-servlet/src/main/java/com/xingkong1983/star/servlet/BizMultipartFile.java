@@ -23,15 +23,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Data
-public class StarMultipartFile implements IPrint {
+public class BizMultipartFile implements IPrint {
 
-	public StarMultipartFile(MultipartFile multiFile) {
+	public BizMultipartFile(MultipartFile multiFile) {
 		this.multiFile = multiFile;
 		uuid = IDTool.genUUID();
 		originName = multiFile.getOriginalFilename();
 		int lastIndex = originName.lastIndexOf(".");
 		suffix = originName.substring(lastIndex).toLowerCase();
-		type = StarFileType.get(suffix);
+		type = BizFileType.get(suffix);
 		this.size = BigDecimal.valueOf(multiFile.getSize());
 		this.createTime = new Date();
 	}
@@ -90,7 +90,7 @@ public class StarMultipartFile implements IPrint {
 	 * 判断是否是图片
 	 */
 	public boolean isImage( ) {
-		if (type != StarFileType.IMG.getValue()) {
+		if (type != BizFileType.IMG.getValue()) {
 			return false;
 		}
 
@@ -117,7 +117,7 @@ public class StarMultipartFile implements IPrint {
 	 * @return
 	 */
 	public boolean isDoc( ) {
-		if (type != StarFileType.DOC.getValue()) {
+		if (type != BizFileType.DOC.getValue()) {
 			return false;
 		} else {
 			return true;
