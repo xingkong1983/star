@@ -16,6 +16,10 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
+		<JAVA_VERSION>17</JAVA_VERSION>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.compilerVersion>17</maven.compiler.compilerVersion>
 	</properties>
 
 	<dependencies>

@@ -1,7 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>pom</packaging>
 	<groupId>com.xingkong1983</groupId>
@@ -14,20 +14,22 @@
 
 	<modules>
 		<module>star-blank</module>
-		<module>star-log</module>
+		<!-- <module>star-log</module> -->
 		<module>star-core</module>
 		<module>star-biz</module>
 		<module>star-servlet</module>
 		<module>star-unipay</module>
-		<module>star-git</module>
+		<!-- <module>star-git</module>
+		<module>star-codegen</module> -->
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<jdk.version>1.8</jdk.version>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<JAVA_VERSION>17</JAVA_VERSION>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.compilerVersion>17</maven.compiler.compilerVersion>
 		<lombok.version>1.18.24</lombok.version>
 		<junit.version>5.9.1</junit.version>
 
@@ -62,13 +64,13 @@
 			<organization>https://www.xingkong1983.com/</organization>
 		</developer>
 	</developers>
-	
+
 	<licenses>
 		<license>
-            <name>MIT License</name>
-            <url>https://github.com/xingkong1983/star/blob/main/LICENSE</url>
-            <distribution>repo</distribution>
-        </license>
+			<name>MIT License</name>
+			<url>https://github.com/xingkong1983/star/blob/main/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
 	</licenses>
 
 	<scm>
@@ -170,7 +172,7 @@
 					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
 				</configuration>
 			</plugin>
-
+			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
@@ -185,6 +187,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			 -->
 		</plugins>
 	</build>
 </project>
