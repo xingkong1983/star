@@ -1,6 +1,6 @@
 package com.xingkong1983.star.biz.vo;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson2.annotation.JSONField;
@@ -34,8 +34,7 @@ public class BizResponseVo implements IPrint {
 	/**
 	 * 返回时间
 	 */
-	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
-	private Date time;
+	private LocalDateTime time;
 
 	/**
 	 * 构造函数
@@ -46,7 +45,7 @@ public class BizResponseVo implements IPrint {
 		this.data = null;
 		this.log = "";
 		this.message = "";
-		this.time = new Date();
+		this.time = LocalDateTime.now();
 	}
 
 	/**
@@ -59,7 +58,7 @@ public class BizResponseVo implements IPrint {
 		this.message = message;
 		this.log = "";
 		this.data = null;
-		this.time = new Date();
+		this.time = LocalDateTime.now();
 	}
 
 	/**
@@ -73,7 +72,7 @@ public class BizResponseVo implements IPrint {
 		this.data = data;
 		this.log = "";
 		this.message = message;
-		this.time = new Date();
+		this.time = LocalDateTime.now();
 	}
 
 	/**
@@ -88,7 +87,7 @@ public class BizResponseVo implements IPrint {
 		this.log = log;
 		this.message = message;
 		this.data = data;
-		this.time = new Date();
+		this.time = LocalDateTime.now();
 	}
 	
 	/**
