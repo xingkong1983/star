@@ -3,9 +3,8 @@ package com.xingkong1983.star.log;
 import java.io.Closeable;
 import java.io.File;
 import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class StarLogTool {
 	private final static int MAX_STACK_LEN = 10;
@@ -18,8 +17,8 @@ public class StarLogTool {
 	 * @return
 	 */
 	protected static String getCurrentDateTimeStr() {
-		Date curDate = new Date();
-		return new SimpleDateFormat(TIME_FORMAT).format(curDate);
+		LocalDateTime curDate = LocalDateTime.now();
+		return curDate.format(DateTimeFormatter.ofPattern(TIME_FORMAT));
 	}
 
 	/**
@@ -52,8 +51,8 @@ public class StarLogTool {
 	 * @return
 	 */
 	protected static String getNowStr() {
-		Date curDate = new Date();
-		return new SimpleDateFormat(TIME_FORMAT).format(curDate);
+		LocalDateTime curDate = LocalDateTime.now();
+		return curDate.format(DateTimeFormatter.ofPattern(TIME_FORMAT));
 	}
 
 	/**
@@ -62,9 +61,8 @@ public class StarLogTool {
 	 * @return
 	 */
 	protected static long getToday() {
-		Calendar date = Calendar.getInstance();
-		long today = date.get(Calendar.YEAR) * 10000 + date.get(Calendar.MONTH) * 100 + date.get(Calendar.DAY_OF_MONTH);
-		return today;
+		LocalDateTime now = LocalDateTime.now();
+		return Long.parseLong(now.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 	}
 
 	/**

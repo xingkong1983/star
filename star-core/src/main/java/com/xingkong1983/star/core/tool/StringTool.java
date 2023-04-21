@@ -1,6 +1,6 @@
 package com.xingkong1983.star.core.tool;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class StringTool {
 
@@ -31,7 +31,7 @@ public class StringTool {
 		return !isEmpty(text);
 	}
 
-	public static boolean isNotEmpty( Date date ) {
+	public static boolean isNotEmpty(LocalDateTime date ) {
 		if (date == null) {
 			return false;
 		} else {

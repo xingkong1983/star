@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.imageio.ImageIO;
 
@@ -33,7 +33,7 @@ public class BizMultipartFile implements IPrint {
 		suffix = originName.substring(lastIndex).toLowerCase();
 		type = BizFileType.get(suffix);
 		this.size = BigDecimal.valueOf(multiFile.getSize());
-		this.createTime = new Date();
+		this.createTime = LocalDateTime.now();
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class BizMultipartFile implements IPrint {
 	/**
 	 * 创建时间
 	 */
-	private Date createTime;
+	private LocalDateTime createTime;
 
 	/**
 	 * 文件名后缀

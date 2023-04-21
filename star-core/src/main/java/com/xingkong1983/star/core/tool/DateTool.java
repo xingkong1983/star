@@ -1,16 +1,15 @@
 package com.xingkong1983.star.core.tool;
 
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
+
+import org.apache.commons.lang.StringUtils;
 
 public final class DateTool {
 
@@ -47,15 +46,14 @@ public final class DateTool {
 	 * @param longTime 时间戳
 	 * @return
 	 */
-	public static Date getDate(String longTime) {
+	public static LocalDateTime getDate(String longTime) {
 		Long time = 0L;
 		try {
 			time = Long.parseLong(longTime);
 		} catch (Exception e) {
 			OsTool.print(e);
 		}
-		Date date = new Date(time);
-
+		LocalDateTime date = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
 		return date;
 	}
 
@@ -67,9 +65,8 @@ public final class DateTool {
 	 * @return
 	 */
 	public static String getString(long longTime, String formatText) {
-		SimpleDateFormat ft = new SimpleDateFormat(formatText, Locale.CHINA);
-		ft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-		return ft.format(longTime);
+		LocalDateTime date = Instant.ofEpochMilli(longTime).atZone(ZoneId.systemDefault()).toLocalDateTime();
+		return date.format(DateTimeFormatter.ofPattern(formatText));
 	}
 
 	/**
@@ -79,35 +76,43 @@ public final class DateTool {
 	 * @param formatText 格式化字符串
 	 * @return
 	 */
-	public static String getString(Date date, String formatText) {
-		SimpleDateFormat ft = new SimpleDateFormat(formatText, Locale.CHINA);
-		ft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-		return ft.format(date);
+	public static String getString(LocalDateTime date, String formatText) {
+		if (date == null || StringUtils.isBlank(formatText)) {
+			return null;
+		}
+		return date.format(DateTimeFormatter.ofPattern(formatText));
 	}
 
 	/**
 	 * 获取当前日期与时间
 	 */
 	public static String getCurrentDateTime() {
-		SimpleDateFormat ft = new SimpleDateFormat(Format.DEFAULT_DATETIME, Locale.CHINA);
-		ft.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-		return ft.format(new Date());
+		LocalDateTime now = LocalDateTime.now();
+		return now.format(DateTimeFormatter.ofPattern(Format.DEFAULT_DATETIME));
 	}
 
 	/**
 	 * 获取现在是哪一年
 	 */
 	public static int getCurrentDateYear() {
-		Calendar date = Calendar.getInstance();
-		return date.get(Calendar.YEAR);
+		LocalDateTime date = LocalDateTime.now();
+		return date.getYear();
+	}
+	
+	/**
+	 * 获取当前是几点
+	 */
+	public static int getCurrentDateHour() {
+		LocalDateTime date = LocalDateTime.now();
+		return date.getHour();
 	}
 
 	/**
 	 * 获取当前是几点
 	 */
 	public static int getCurrentDateHour(Long time) {
-		Calendar date = Calendar.getInstance();
-		return date.get(Calendar.HOUR_OF_DAY);
+		LocalDateTime date = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
+		return date.getHour();
 	}
 
 	/**
@@ -117,24 +122,23 @@ public final class DateTool {
 	 * @param days
 	 * @return
 	 */
-	public static Date getDateAfter(Date date, int days) {
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.setTime(date);
-		calendar.add(GregorianCalendar.DATE, days);
-		return calendar.getTime();
+	public static LocalDateTime getDateAfter(LocalDateTime date, int days) {
+		if (date == null) {
+			return null;
+		}
+		return date.plusDays(days);
 	}
 
 	/**
-	 * 返回当前时间24小时 时数组
+	 * 返回从当前时间开始的24小时制小时数组
 	 * 
 	 * @return
 	 */
 	public static ArrayList<String> getCurrentDateBeforeHour(int intervals) {
 		ArrayList<String> pastHoursList = new ArrayList<>();
+		LocalDateTime now = LocalDateTime.now();
 		for (int i = 0; i < intervals; i++) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.HOUR_OF_DAY, i);
-			pastHoursList.add(String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
+			pastHoursList.add(String.valueOf(now.plusHours(i).getHour()));
 		}
 		return pastHoursList;
 	}
@@ -162,12 +166,9 @@ public final class DateTool {
 	 * @return
 	 */
 	public static String getPastDate(int past, String formatText) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) - past);
-		Date today = calendar.getTime();
-		SimpleDateFormat format = new SimpleDateFormat(formatText);
-		String result = format.format(today);
-		return result;
+		LocalDateTime localDateTime = LocalDateTime.now();
+		localDateTime = localDateTime.minusDays(past);
+		return localDateTime.format(DateTimeFormatter.ofPattern(formatText));
 	}
 
 	/**
@@ -176,10 +177,8 @@ public final class DateTool {
 	 * @return
 	 */
 	public static String getCurrentDateStr() {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(Format.DEFAULT_DATETIME, Locale.CHINA);
 		LocalDateTime localDateTime = LocalDateTime.now();
-		String format1 = dateTimeFormatter.format(localDateTime);
-		return format1;
+		return localDateTime.format(DateTimeFormatter.ofPattern(Format.DEFAULT_DATETIME));
 	}
 
 	/**
@@ -188,9 +187,8 @@ public final class DateTool {
 	 * @return
 	 */
 	public static String getNospaceDateStr() {
-		Date date = new Date();
-		String formatStr = DateTool.getString(date.getTime(), DateTool.Format.NOSPACE_DATE);
-		return formatStr;
+		LocalDateTime date = LocalDateTime.now();
+		return date.format(DateTimeFormatter.ofPattern(DateTool.Format.NOSPACE_DATE));
 	}
 
 	/**
@@ -198,13 +196,8 @@ public final class DateTool {
 	 * 
 	 * @return
 	 */
-	public static Date getDateByStr(String dateStr) {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(Format.DEFAULT_DATETIME, Locale.CHINA);
-		LocalDateTime localDateTime = LocalDateTime.parse(dateStr, dateTimeFormatter);
-		ZoneId zoneId = ZoneId.systemDefault();
-		ZonedDateTime zdt = localDateTime.atZone(zoneId);
-		Date date = Date.from(zdt.toInstant());
-		return date;
+	public static LocalDateTime getDateByStr(String dateStr) {
+		return LocalDateTime.parse(dateStr, DateTimeFormatter.ofPattern(Format.DEFAULT_DATETIME));
 	}
 
 	/**
@@ -214,14 +207,9 @@ public final class DateTool {
 	 * @param endDate   截止日期2 (格式yyyy-MM-dd)
 	 * @return
 	 */
-	public static int getMonthsBetween(Date startDate, Date endDate) {
-		Calendar c1 = Calendar.getInstance();
-		Calendar c2 = Calendar.getInstance();
-		c1.setTime(startDate);
-		c2.setTime(endDate);
-		int year = c2.get(Calendar.YEAR) - c1.get(Calendar.YEAR);
-		int month = c2.get(Calendar.MONTH) - c1.get(Calendar.MONTH);
-		return Math.abs(year * 12 + month);
+	public static long getMonthsBetween(LocalDateTime startDate, LocalDateTime endDate) {
+		long month = startDate.until(endDate, ChronoUnit.MONTHS);
+		return Math.abs(month);
 	}
 
 	/**
@@ -231,20 +219,16 @@ public final class DateTool {
 	 * @param endDate
 	 * @return
 	 */
-	public static String getDateBetween(Date beginDate, Date endDate) {
+	public static String getDateBetween(LocalDateTime beginDate, LocalDateTime endDate) {
 		String data = "";
-		Calendar begin = Calendar.getInstance();
-		begin.setTime(beginDate);
-		Calendar end = Calendar.getInstance();
-		end.setTime(endDate);
-		int day = end.get(Calendar.DAY_OF_MONTH) - begin.get(Calendar.DAY_OF_MONTH);
-		int month = end.get(Calendar.MONTH) - begin.get(Calendar.MONTH);
-		int year = end.get(Calendar.YEAR) - begin.get(Calendar.YEAR);
+		int day = endDate.getDayOfMonth() - beginDate.getDayOfMonth();
+		int month = endDate.getMonthValue() - beginDate.getMonthValue();
+		int year = endDate.getYear() - beginDate.getYear();
 		// 按照减法原理，先day相减，不够向month借；然后month相减，不够向year借；最后year相减。
 		if (day < 0) {
 			month -= 1;
-			end.add(Calendar.MONTH, -1);// 得到上一个月，用来得到上个月的天数。
-			day = day + end.getActualMaximum(Calendar.DAY_OF_MONTH);
+			endDate = endDate.minusHours(1);// 得到上一个月，用来得到上个月的天数。
+			day = day + endDate.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
 		}
 		if (month < 0) {
 			month = (month + 12) % 12;
@@ -264,8 +248,8 @@ public final class DateTool {
 	 * @return
 	 */
 	public static String getCurrentDateNoSpce() {
-		SimpleDateFormat ft = new SimpleDateFormat(DateTool.Format.NOSPACE_DATE);
-		return ft.format(new Date());
+		LocalDateTime now = LocalDateTime.now();
+		return now.format(DateTimeFormatter.ofPattern(DateTool.Format.NOSPACE_DATE));
 	}
 
 	/**
@@ -274,7 +258,71 @@ public final class DateTool {
 	 * @return
 	 */
 	public static String getSignedCurrentTime() {
-		SimpleDateFormat ft = new SimpleDateFormat(DateTool.Format.DEFAULT_DATE);
-		return ft.format(new Date());
+		LocalDateTime now = LocalDateTime.now();
+		return now.format(DateTimeFormatter.ofPattern(DateTool.Format.DEFAULT_DATE));
+	}
+	
+    
+	/**
+	 * 字符串时间转Date
+	 * 
+	 * @param strTime
+	 * @param pattern
+	 * @return
+	 */
+    public static LocalDateTime parse(String strTime, String pattern) {
+		return LocalDateTime.parse(strTime, DateTimeFormatter.ofPattern(pattern));
+    }
+	
+	/**
+	 * 获取指定日期当天的开始时间
+	 * 
+	 * @param day
+	 * @return
+	 */
+    public static LocalDateTime getStartOfDay(LocalDateTime date) {
+    	if(date == null) {
+    		return null;
+    	}
+    	return date.withHour(0).withMinute(0).withSecond(0).withNano(0);
+    }
+    
+	/**
+	 * 获取指定日期当天的开始时间
+	 * 
+	 * @param day
+	 * @return
+	 */    
+	public static LocalDateTime getStartOfDay(LocalDate date) {
+		if(date == null) {
+			return null;
+		}
+		return date.atTime(0, 0, 0, 0);
+	}
+	
+	/**
+	 * 获取指定日期当天的最后时间
+	 * 
+	 * @param day
+	 * @return
+	 */
+	public static LocalDateTime getEndOfDay(LocalDateTime date) {
+		if (date == null) {
+			return null;
+		}
+		return date.withHour(23).withMinute(59).withSecond(59).withNano(0);
+	}
+	
+	/**
+	 * 获取指定日期当天的最后时间
+	 * 
+	 * @param day
+	 * @return
+	 */	
+	public static LocalDateTime getEndOfDay(LocalDate date) {
+		if (date == null) {
+			return null;
+		}
+		return date.atTime(23, 59, 59, 0);
 	}
 }
