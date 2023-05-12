@@ -34,7 +34,7 @@ public class StarLogMo {
 			flag = StartLogEvent.FLAG_LOG;
 		}
 
-		this.headStr = levelNameStr + SPACE + curDateStr + SPACE + threadId + ":" + threadName;
+		this.headStr = curDateStr +SPACE +levelNameStr + SPACE + threadId + ":" + threadName;
 		this.headStr += " (" + fileName + ":" + lineNumber + ") : ";
 	}
 }

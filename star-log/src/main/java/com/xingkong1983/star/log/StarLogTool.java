@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 public class StarLogTool {
 	private final static int MAX_STACK_LEN = 10;
 
-	private static String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+	private static String TIME_FORMAT = "yy年MM月dd日 HH:mm:ss.SSS";
 
 	/**
 	 * 获取当前时间字符串

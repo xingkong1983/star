@@ -20,9 +20,7 @@ public class StarLogThread extends Thread {
 	@Override
 	public void run( ) {
 		long seqId = 0;
-
 		try {
-
 			// 比较日期是否已经发生变化，如果日期发生了变化，新起一个文件
 			logFile = new StarLogFile("log");
 			bizFile = new StarLogFile("biz");

@@ -32,19 +32,11 @@ public class StarLogFile {
 			this.path = StarLogTool.getCurrentPath() + "../logs/";
 			StarLogTool.createDir(this.path);
 			logFullName = path + this.lastDay + logName;
-			StarLogTool.print("");
-			StarLogTool.print("----------------------------------------");
 			StarLogTool.print("[StarLog] logFullName: \n" + logFullName);
-			StarLogTool.print("----------------------------------------");
-			StarLogTool.print("");
 			this.file = new File(logName);
 			this.writer = new FileWriter(file, Charset.forName("utf-8"), true);
-			this.writer.write("\n----------------------------------------\n");
-			StarLogTool.print("\n----------------------------------------");
 			this.writer.write("[StarLog] begin.         \n");
 			StarLogTool.print("[StarLog] begin.           ");
-			this.writer.write("----------------------------------------\n\n");
-			StarLogTool.print("----------------------------------------\n");
 			this.writer.flush();
 			System.out.flush();
 

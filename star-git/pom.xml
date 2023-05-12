@@ -14,7 +14,7 @@
 	<name>${project.artifactId}</name>
 	<description>the git lib </description>
 	<properties>
-	
+
 	</properties>
 
 	<dependencies>
@@ -22,7 +22,13 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>6.2.0.202206071550-r</version>
+			<version>6.5.0.202303070854-r</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 
@@ -39,9 +45,14 @@
 			<version>${parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.xingkong1983</groupId>
-			<artifactId>star-log</artifactId>
-			<version>${parent.version}</version>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>1.4.5</version>
+		</dependency>
+				<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.4.5</version>
 		</dependency>
 	</dependencies>
 

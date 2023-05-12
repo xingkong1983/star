@@ -53,6 +53,7 @@ public class RepoTool {
 			log.error("", e);
 			return false;
 		}
+		log.info("[^_^] Create Repo ok.");
 		return true;
 	}
 
@@ -79,6 +80,7 @@ public class RepoTool {
 			log.error("", e);
 			return false;
 		}
+		log.info("[^_^] CreateByclone ok.");
 		return true;
 	}
 
@@ -136,16 +138,11 @@ public class RepoTool {
 				RevCommit commit = walk.parseCommit(head.getObjectId());
 				repoCommitMo = new RepoCommitMo(commit);
 				RevTree tree = commit.getTree();
-				treeWalk = new TreeWalk(repository);
-				if (StringTool.isEmpty(dirPath)) {
-					treeWalk.setFilter(null);
-				} else {
-					treeWalk.setFilter(PathFilter.create(dirPath));
-				}
+				treeWalk = TreeWalk.forPath(repository,dirPath, tree);
 				treeWalk.reset(tree);
-				treeWalk.setRecursive(false);
+				treeWalk.setRecursive(true);
+			
 				while (treeWalk.next()) {
-
 					RepoFileMo repoFileMo = new RepoFileMo(treeWalk);
 					repoFileMoList.add(repoFileMo);
 
@@ -192,7 +189,7 @@ public class RepoTool {
 			}
 
 		} catch (GitAPIException | IOException e) {
-			log.error("", e);
+			log.error("获取不到分支列表", e);
 		} finally {
 			OsTool.close(git);
 		}

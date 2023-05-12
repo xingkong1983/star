@@ -1,6 +1,7 @@
 package com.xingkong1983.star.core.tool;
 
 import java.io.Closeable;
+import java.util.Map;
 import java.util.Scanner;
 
 public class OsTool {
@@ -8,6 +9,15 @@ public class OsTool {
 	private final static int MAX_STACK_LEN = 10;
 
 
+	public static void printEnv() {
+		Map<String,String> envMap = System.getenv();
+		envMap.forEach((k,v)->{
+			print(k+"="+v);
+		});
+		
+	}
+	
+	
 	/**
 	 * 打印一行字符串
 	 * 
