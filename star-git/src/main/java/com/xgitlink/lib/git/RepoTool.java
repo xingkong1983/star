@@ -138,7 +138,7 @@ public class RepoTool {
 				RevCommit commit = walk.parseCommit(head.getObjectId());
 				repoCommitMo = new RepoCommitMo(commit);
 				RevTree tree = commit.getTree();
-				treeWalk = TreeWalk.forPath(repository,dirPath, tree);
+				treeWalk = new TreeWalk(walk);
 				treeWalk.reset(tree);
 				treeWalk.setRecursive(true);
 			
@@ -149,7 +149,6 @@ public class RepoTool {
 					String filePath = treeWalk.getPathString();
 					Iterable<RevCommit> commitLog = git.log().add(repository.resolve(Constants.HEAD)).addPath(filePath)
 							.call();
-					log.info("------" + filePath + "-------");
 					for (RevCommit revCommit : commitLog) {
 						repoFileMo.setRepoCommitMo(revCommit);
 						break;
