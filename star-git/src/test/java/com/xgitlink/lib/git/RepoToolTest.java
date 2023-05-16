@@ -2,8 +2,6 @@ package com.xgitlink.lib.git;
 
 import java.util.List;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -11,7 +9,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import com.xgitlink.lib.git.mo.RepoDirMo;
+import com.xgitlink.lib.git.mo.RepoFileMo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,7 +57,7 @@ public class RepoToolTest {
 
 		//OsTool.printEnv();
 
-		RepoDirMo repoDirMo = null;
+		 List<RepoFileMo> repoFileList = null;
 		log.info("====================================");
 		log.info("测试获取仓库对应目录信息");
 		log.info("====================================");
@@ -67,21 +65,21 @@ public class RepoToolTest {
 			log.info("====================================");
 			log.info("测试空目录");
 			log.info("====================================");
-			repoDirMo = RepoTool.getRepoFileList("D:/000-gitrepo/Tailwind-CSS-Lab/.git", "refs/heads/main", "");
+			repoFileList = RepoTool.getRepoFileList("D:/000-gitrepo/Tailwind-CSS-Lab/.git", "refs/heads/main", "");
 			log.info("====================================");
 			log.info("测试b-dir/b001-dir");
 			log.info("====================================");
 			
-			repoDirMo = RepoTool.getRepoFileList("D:/000-gitrepo/Tailwind-CSS-Lab/.git", "refs/heads/main", "b-dir/b001-dir");
+			repoFileList = RepoTool.getRepoFileList("D:/000-gitrepo/Tailwind-CSS-Lab/.git", "refs/heads/main", "b-dir/b001-dir");
 			
 			log.info("====================================");
 			log.info("测试a-dir");
 			log.info("====================================");
 			
-			repoDirMo = RepoTool.getRepoFileList("D:/000-gitrepo/Tailwind-CSS-Lab/.git", "refs/heads/main", "a-dir");
+			repoFileList = RepoTool.getRepoFileList("D:/000-gitrepo/Tailwind-CSS-Lab/.git", "refs/heads/main", "a-dir");
 		} catch (Exception e) {
 			log.info("", e);
 		}
-		repoDirMo.print();
+		
 	}
 }

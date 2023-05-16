@@ -3,7 +3,6 @@ package com.xgitlink.lib.git;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jgit.api.CloneCommand;
@@ -17,20 +16,13 @@ import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.lib.FileMode;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
 
-import com.xgitlink.lib.git.mo.RepoCommitMo;
-import com.xgitlink.lib.git.mo.RepoDirMo;
 import com.xgitlink.lib.git.mo.RepoFileMo;
 import com.xingkong1983.star.core.tool.OsTool;
 import com.xingkong1983.star.core.tool.StringTool;
@@ -117,43 +109,21 @@ public class RepoTool {
 		return git;
 	}
 
-	public static RepoCommitMo getLastCommitMo(Repository db, String branchName)
-			throws MissingObjectException, IncorrectObjectTypeException, IOException {
-		Ref head;
-		RevWalk walk = new RevWalk(db);
-		head = db.exactRef(branchName);
-
-		RepoCommitMo repoCommitMo = null;
-
-		if (head != null && head.getObjectId() != null) {
-			RevCommit commit = walk.parseCommit(head.getObjectId());
-			repoCommitMo = new RepoCommitMo(commit);
-			OsTool.close(walk);
-		}
-		return repoCommitMo;
-	}
-
 	/**
 	 * 获取指定文件路径的提交日志
 	 * 
 	 * @param filePath
 	 * @return
-	 * @throws IOException
-	 * @throws GitAPIException
-	 * @throws AmbiguousObjectException
-	 * @throws IncorrectObjectTypeException
-	 * @throws MissingObjectException
-	 * @throws NoHeadException
-	 * @throws RevisionSyntaxException
+	 * @throws Exception
 	 */
-	public static RevCommit getFileCommitLog(Git git, Repository db, String filePath)
-			throws RevisionSyntaxException, NoHeadException, MissingObjectException, IncorrectObjectTypeException,
-			AmbiguousObjectException, GitAPIException, IOException {
-		Iterable<RevCommit> commitLog = git.log().add(db.resolve(Constants.HEAD)).addPath(filePath).call();
+	public static RepoFileMo getRepoFileMoFromTreeWalk(TreeWalk tw, Git git, Repository db) throws Exception {
+		String curPath = tw.getPathString();
+		RepoFileMo repoFileMo = new RepoFileMo(tw);
+		Iterable<RevCommit> commitLog = git.log().add(db.resolve(Constants.HEAD)).addPath(curPath).call();
 		for (RevCommit revCommit : commitLog) {
-			return revCommit;
+			repoFileMo.setCommitInfo(revCommit);
 		}
-		return null;
+		return repoFileMo;
 	}
 
 	/**
@@ -164,86 +134,20 @@ public class RepoTool {
 	 * @param dirPath    仓库子目录路径
 	 * @return
 	 */
-	public static RepoDirMo getRepoFileList(String repoPath, String branchName, String dirPath) {
+	public static List<RepoFileMo> getRepoFileList(String repoPath, String branchName, String path) {
 		Repository db = null;
-		try {
-			db = open(repoPath);
-			getDirObjectId(db, branchName, dirPath);
-		} catch (Exception e) {
-			log.error("遍历出现错误", e);
-		} finally {
-			OsTool.close(db);
-		}
-		return null;
-	}
 
-	/**
-	 * 获取仓库某个路径下的所有文件和最后的提交记录
-	 * 
-	 * @param repoPath
-	 * @param branchName
-	 * @param dirPath
-	 * @return
-	 * @throws RevisionSyntaxException
-	 * @throws NoHeadException
-	 * @throws GitAPIException
-	 */
-//	public static RepoDirMo getRepoDirMo(String repoPath, String branchName, String dirPath)
-//			throws RevisionSyntaxException, NoHeadException, GitAPIException {
-//		Repository db = null;
-//		Git git = null;
-//
-//		TreeWalk treeWalk = null;
-//		// RepoCommitMo repoCommitMo = null;
-//		// List<RepoFileMo> repoFileMoList = new ArrayList<RepoFileMo>();
-//		try {
-//			db = open(repoPath);
-//			git = new Git(db);
-//			treeWalk = new TreeWalk(db);
-//			// repoCommitMo = getLastCommitMo(db, branchName);
-//			treeWalk.setRecursive(false);
-//			treeWalk.reset();
-//
-//			while (treeWalk.next()) {
-//				// RepoFileMo repoFileMo = new RepoFileMo(treeWalk);
-//				// repoFileMoList.add(repoFileMo);
-//				String filePath = treeWalk.getPathString();
-//				log.info(filePath);
-//				// RevCommit revCommit = getFileCommitLog(git, db, filePath);
-//				// repoFileMo.setRepoCommitMo(revCommit);
-//			}
-//			log.info("数据读取完毕");
-//
-//		} catch (Exception e) {
-//			log.error("遍历出现错误", e);
-//		} finally {
-//
-//			OsTool.close(treeWalk);
-//			OsTool.close(db);
-//
-//		}
-//		// RepoDirMo repoDirMo = new RepoDirMo(repoCommitMo, repoFileMoList);
-//		return null;
-//	}
-
-	/**
-	 * 获取子目录的提交编号
-	 * 
-	 * @param db
-	 * @param path
-	 * @param commit
-	 * @return
-	 */
-	public static ObjectId getDirObjectId(Repository db, String branchName, String path) {
-		ObjectId objectId = null;
 		Git git = null;
 		Ref head = null;
 		RevWalk rw = null;
 		TreeWalk tw = null;
+		List<RepoFileMo> repoFileMoList = new ArrayList<RepoFileMo>();
 		try {
+			db = open(repoPath);
 			git = new Git(db);
 			head = db.exactRef(branchName);
 			if (head == null || head.getObjectId() == null) {
+
 				return null;
 			}
 			RevCommit commit = null;
@@ -252,6 +156,7 @@ public class RepoTool {
 
 			tw = new TreeWalk(db);
 			tw.reset(commit.getTree());
+
 			if (StringTool.isNotEmpty(path)) {
 				while (tw.next()) {
 					String curPath = tw.getPathString();
@@ -268,6 +173,8 @@ public class RepoTool {
 						} else {
 							log.debug("找到路径：" + curPath);
 							if (path.startsWith(curPath)) {
+								RepoFileMo repoFileMo = getRepoFileMoFromTreeWalk(tw, git, db);
+								repoFileMoList.add(repoFileMo);
 								tw.enterSubtree();
 							}
 							break;
@@ -278,37 +185,35 @@ public class RepoTool {
 				}
 			}
 			log.debug("遍历目录：");
-			
-			String curPath = tw.getPathString();
-			List<RepoFileMo> repoFileMoList = new ArrayList<RepoFileMo>();
-			RevCommit revCommit = getFileCommitLog(git, db, curPath);
-			RepoFileMo repoFileMo = new RepoFileMo(tw);
-			repoFileMo.setRepoCommitMo(revCommit);
-			repoFileMoList.add(repoFileMo);
+
 			while (tw.next()) {
-				curPath = tw.getPathString();
+				String curPath = tw.getPathString();
 				if (curPath.startsWith(path)) {
 					if (tw.isSubtree()) {
 						log.debug("当前的路径是：" + curPath);
 					} else {
 						log.debug("当前的文件是：" + curPath);
 					}
-					
-					revCommit = getFileCommitLog(git, db, curPath);
-					repoFileMo = new RepoFileMo(tw);
-					repoFileMo.setRepoCommitMo(revCommit);
+
+					RepoFileMo repoFileMo = getRepoFileMoFromTreeWalk(tw, git, db);
 					repoFileMoList.add(repoFileMo);
 				}
 			}
-			log.info(repoFileMo.toJson());
+
+			for (RepoFileMo curRepoFileMo : repoFileMoList) {
+
+				log.info(curRepoFileMo.toString());
+			}
 
 		} catch (Exception e) {
 			log.error("错误消息", e);
 		} finally {
+			OsTool.close(git);
 			OsTool.close(rw);
 			OsTool.close(tw);
+			OsTool.close(db);
 		}
-		return objectId;
+		return repoFileMoList;
 	}
 
 	/**

@@ -11,12 +11,15 @@
        %m:输出代码中指定的讯息，如log(message)中的message
        %n:输出一个换行符号
        uid:[%X{wtraceid}] ip:[%X{ip}] url:[%X{url}] params:[%X{params}]
+       
+       [%logger]  输出打印日志的 logger 是哪一个
+       
    -->
     <contextName>logback</contextName>
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>
-            	%d{yy/MM/dd HH:mm:ss.SSS} [%-5level] [%logger]\(%F:%L\) %msg %n
+            	%d{yy/MM/dd HH:mm:ss.SSS} [%-5level] \(%F:%L\) %msg %n
             </pattern>
         </encoder>
     </appender>

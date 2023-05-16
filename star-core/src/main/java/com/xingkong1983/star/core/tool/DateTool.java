@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -98,7 +99,7 @@ public final class DateTool {
 		LocalDateTime date = LocalDateTime.now();
 		return date.getYear();
 	}
-	
+
 	/**
 	 * 获取当前是几点
 	 */
@@ -261,8 +262,7 @@ public final class DateTool {
 		LocalDateTime now = LocalDateTime.now();
 		return now.format(DateTimeFormatter.ofPattern(DateTool.Format.DEFAULT_DATE));
 	}
-	
-    
+
 	/**
 	 * 字符串时间转Date
 	 * 
@@ -270,36 +270,36 @@ public final class DateTool {
 	 * @param pattern
 	 * @return
 	 */
-    public static LocalDateTime parse(String strTime, String pattern) {
+	public static LocalDateTime parse(String strTime, String pattern) {
 		return LocalDateTime.parse(strTime, DateTimeFormatter.ofPattern(pattern));
-    }
-	
+	}
+
 	/**
 	 * 获取指定日期当天的开始时间
 	 * 
 	 * @param day
 	 * @return
 	 */
-    public static LocalDateTime getStartOfDay(LocalDateTime date) {
-    	if(date == null) {
-    		return null;
-    	}
-    	return date.withHour(0).withMinute(0).withSecond(0).withNano(0);
-    }
-    
+	public static LocalDateTime getStartOfDay(LocalDateTime date) {
+		if (date == null) {
+			return null;
+		}
+		return date.withHour(0).withMinute(0).withSecond(0).withNano(0);
+	}
+
 	/**
 	 * 获取指定日期当天的开始时间
 	 * 
 	 * @param day
 	 * @return
-	 */    
+	 */
 	public static LocalDateTime getStartOfDay(LocalDate date) {
-		if(date == null) {
+		if (date == null) {
 			return null;
 		}
 		return date.atTime(0, 0, 0, 0);
 	}
-	
+
 	/**
 	 * 获取指定日期当天的最后时间
 	 * 
@@ -312,17 +312,25 @@ public final class DateTool {
 		}
 		return date.withHour(23).withMinute(59).withSecond(59).withNano(0);
 	}
-	
+
 	/**
 	 * 获取指定日期当天的最后时间
 	 * 
 	 * @param day
 	 * @return
-	 */	
+	 */
 	public static LocalDateTime getEndOfDay(LocalDate date) {
 		if (date == null) {
 			return null;
 		}
 		return date.atTime(23, 59, 59, 0);
+	}
+
+	public static LocalDateTime date2LocalDateTime(Date date) {
+		Instant instant = date.toInstant();
+		ZoneId zoneId = ZoneId.systemDefault();
+
+		LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
+		return localDateTime;
 	}
 }
