@@ -124,8 +124,13 @@ public class BizResponseVo implements IPrint {
 	
 	public BizResponseVo error(String message, Exception e) {
 		this.message = message;
-		this.log = e.getMessage();
-		this.data = OsTool.getErrorText(e);
+		if(e != null) {
+			this.log = e.getMessage();
+			this.data = OsTool.getErrorText(e);
+		} else {
+			this.log = "";
+			this.data = null;
+		}
 		return this;
 	}
 
