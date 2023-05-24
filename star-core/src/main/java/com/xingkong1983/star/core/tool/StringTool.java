@@ -14,7 +14,7 @@ public class StringTool {
 	 * @return
 	 */
 	public static boolean isEmpty( String text ) {
-		if (text == null || text.trim().length() == 0 || NULL_STR.toLowerCase().trim().equals(text)) {
+		if (text == null || text.trim().length() == 0 || NULL_STR.toLowerCase().equals(text.trim())) {
 			return true;
 		} else {
 			return false;
