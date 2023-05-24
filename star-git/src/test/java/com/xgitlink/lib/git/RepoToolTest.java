@@ -57,7 +57,7 @@ public class RepoToolTest {
 
 		//OsTool.printEnv();
 
-		 List<RepoFileMo> repoFileList = null;
+		List<RepoFileMo> repoFileList = null;
 		log.info("====================================");
 		log.info("测试获取仓库对应目录信息");
 		log.info("====================================");
