@@ -67,11 +67,13 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
 			<version>1.4.5</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.4.5</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 

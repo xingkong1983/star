@@ -31,11 +31,7 @@
 			<artifactId>spring-web</artifactId>
 			<version>5.2.8.RELEASE</version>
 		</dependency>
-		<dependency>
-			<groupId>com.xingkong1983</groupId>
-			<artifactId>star-log</artifactId>
-			<version>${parent.version}</version>
-		</dependency>
+
 
 		<dependency>
 			<groupId>com.xingkong1983</groupId>
@@ -48,6 +44,20 @@
 			<artifactId>star-biz</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>1.4.5</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.4.5</version>
+			<scope>compile</scope>
+		</dependency>
+
 
 	</dependencies>
 
