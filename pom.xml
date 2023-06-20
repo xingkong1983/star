@@ -20,7 +20,9 @@
 		<module>star-servlet</module>
 		<module>star-unipay</module>
 		<module>star-git</module>
-		<module>star-process</module>
+
+<!--		<module>star-process</module>-->
+
 		<!-- <module>star-codegen</module> -->
 	</modules>
 
