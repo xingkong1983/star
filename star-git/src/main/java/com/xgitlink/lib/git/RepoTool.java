@@ -5,16 +5,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.http.server.GitServlet;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -248,5 +248,31 @@ public class RepoTool {
 		}
 
 		return branchList;
+	}
+
+	/**
+	 * 
+	 * @param REPO_PATH
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	public static void httpServlet(String repoPath, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		File repository = new File(repoPath);
+		Git git;
+		try {
+			git = Git.open(repository);
+			// Create and configure the Git servlet
+			GitServlet gitServlet = new GitServlet();
+			gitServlet.setRepositoryResolver((req, name) -> git.getRepository());
+			gitServlet.service(request, response);
+			
+		} catch ( ServletException e) {
+			log.error("git仓库出现错误",e);
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		finally {
+			
+		}
 	}
 }

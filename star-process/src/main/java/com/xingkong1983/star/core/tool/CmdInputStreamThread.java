@@ -8,28 +8,29 @@ import java.nio.charset.Charset;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CmdStreamThread extends Thread {
+public class CmdInputStreamThread extends Thread {
 	private InputStream stream;
 	private String result="";
 
 	public void run() {
 		String line = null;
 
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(stream, Charset.forName("GBK")));) {
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));) {
 			while ((line = in.readLine()) != null) {
 				this.result += line + "\r\n";
-				//OsTool.print(line);
 			}
 		} catch (IOException e) {
-			OsTool.print(e);
+			log.error("[-_-]",e);
 		}
-		OsTool.print("StreamThread-"+this.getId()+" is end.");
+		log.info("StreamThread-"+threadId()+" is end.");
 	}
 
-	public CmdStreamThread(InputStream stream) {
+	public CmdInputStreamThread(InputStream stream) {
 		this.stream = stream;
 	}
 }
