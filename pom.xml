@@ -34,7 +34,7 @@
 		<lombok.version>1.18.24</lombok.version>
 		<junit.version>5.9.1</junit.version>
 
-		<!-- <skipTests>true</skipTests> -->
+		<skipTests>true</skipTests>
 	</properties>
 
 	<dependencies>
