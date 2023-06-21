@@ -29,6 +29,9 @@ public enum BizFileType {
 	public static final Map<String, Integer> fileType = new HashMap();
 	
 	public static int get(String suffix) {
+		if(suffix != null) {
+			suffix = suffix.toLowerCase();
+		}
 		Integer type = fileType.get(suffix);
 		if(type == null) {
 			type = OTHER.getValue();
