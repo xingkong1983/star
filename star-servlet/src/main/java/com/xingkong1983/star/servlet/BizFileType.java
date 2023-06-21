@@ -4,13 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum BizFileType {
+	OTHER("其他", -1),
 	DOC("文档", 0),
 	XLS("表格", 1),
 	XLSX("表格", 2),
 	PDF("pdf", 3),
 	IMG("图片", 4),
 	DVD("视频", 5),
-	PKG("压缩包", 6);
+	PKG("压缩包", 6),
+	EXE("安装包", 7);
 
 	private final String TYPE_NAME;
 	private final int TYPE_VALUE;
@@ -27,7 +29,11 @@ public enum BizFileType {
 	public static final Map<String, Integer> fileType = new HashMap();
 	
 	public static int get(String suffix) {
-		return fileType.get(suffix);
+		Integer type = fileType.get(suffix);
+		if(type == null) {
+			type = OTHER.getValue();
+		}
+		return type;
 	}
 
 	static {
@@ -49,6 +55,11 @@ public enum BizFileType {
 		fileType.put(".rm", BizFileType.DVD.getValue());
 		fileType.put(".rar", BizFileType.PKG.getValue());
 		fileType.put(".zip", BizFileType.PKG.getValue());
+		
+		fileType.put(".exe", BizFileType.EXE.getValue());
+		fileType.put(".rpm", BizFileType.EXE.getValue());
+		fileType.put(".bin", BizFileType.EXE.getValue());
+		fileType.put(".deb", BizFileType.EXE.getValue());
 
 	}
 }
