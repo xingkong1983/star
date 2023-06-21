@@ -8,6 +8,9 @@ import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class FileTool {
 	/**
 	 * 读取一个文件到字符串
@@ -16,7 +19,7 @@ public class FileTool {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String readText( String fileName ) throws Exception {
+	public static String readText(String fileName) throws Exception {
 		File file = new File(fileName);
 		String content = FileUtils.readFileToString(file, Charset.forName("utf-8"));
 		return content;
@@ -29,12 +32,12 @@ public class FileTool {
 	 * @param text
 	 * @throws IOException
 	 */
-	public static void writeText( String fileName, String text ) throws IOException {
+	public static void writeText(String fileName, String text) throws IOException {
 		File file = new File(fileName);
 		FileUtils.writeStringToFile(file, text, Charset.forName("utf-8"));
 	}
 
-	public static byte[] readStream( InputStream inputStream ) throws IOException {
+	public static byte[] readStream(InputStream inputStream) throws IOException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024];
 		int len = -1;
@@ -50,7 +53,7 @@ public class FileTool {
 	 * @param fileName
 	 * @return
 	 */
-	public static boolean reCreateFile( String fileName ) {
+	public static boolean reCreateFile(String fileName) {
 		boolean result = false;
 		File file = null;
 		try {
@@ -66,21 +69,48 @@ public class FileTool {
 			}
 			result = true;
 		} catch (IOException e) {
-			OsTool.print(e);
+			log.error("reCreateFile err:", e);
 		} finally {
 
 		}
 		return result;
 	}
 
-	public static boolean delete( String fileName ) {
+	public static boolean delete(String fileName) {
 		File file = new File(fileName);
 		if (file.exists()) {
 			return file.delete();
 		} else {
-			OsTool.print("不存在文件:" + fileName);
+			log.error("file don't exists:" + fileName);
 		}
 		return true;
+	}
+
+	/**
+	 * 判断文件是否存在
+	 * 
+	 * @param fileName
+	 * @return
+	 */
+	public static boolean exists(String fileName) {
+		File file = new File(fileName);
+		return file.exists();
+	}
+
+	/**
+	 * 拷贝文件
+	 * 
+	 * @param srcFileName
+	 * @param targetFileName
+	 * @throws IOException
+	 */
+	public static void copyFile(String srcFileName, String targetFileName) throws IOException {
+		if (FileTool.exists(srcFileName)) {
+			File fileSrc = new File(srcFileName);
+			File fileTarget = new File(targetFileName);
+			FileUtils.copyFile(fileSrc, fileTarget);
+		}
+
 	}
 
 	/**
@@ -91,7 +121,7 @@ public class FileTool {
 	 * @param unit 限制单位(B,K,M,G)
 	 * @return
 	 */
-	public static boolean checkFileSize( Long len, int size, String unit ) {
+	public static boolean checkFileSize(Long len, int size, String unit) {
 		// long len = file.length();
 		double fileSize = 0;
 		if ("B".equals(unit.toUpperCase())) {

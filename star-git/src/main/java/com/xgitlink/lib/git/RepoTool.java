@@ -5,16 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.InitCommand;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.http.server.GitServlet;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -24,6 +18,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 import com.xgitlink.lib.git.mo.RepoFileMo;
+import com.xingkong1983.star.core.tool.FileTool;
 import com.xingkong1983.star.core.tool.OsTool;
 import com.xingkong1983.star.core.tool.StringTool;
 
@@ -31,29 +26,99 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RepoTool {
+
 	/**
 	 * 创建一个仓库
 	 * 
-	 * @param repoPath 仓库的路径
+	 * @param repoPath    仓库的路径
+	 * @param readMeText
+	 * @param gitnore
+	 * @param license
+	 * @param templateDir gitignore 文件和 licnese
 	 * @return 创建成功返回为真，创建失败返回为假
 	 */
-	public static boolean create(String repoPath) {
+	public static boolean create(String repoPath, String readMeText, String gitignore, String license,
+			String templateDir) {
+		String gitPath = repoPath + "/.git";
 		File repoFile = new File(repoPath);
 		if (repoFile.exists() && repoFile.isDirectory()) {
 			log.info("[-_-] err: repo is exist, create repo failed, dir: " + repoFile);
 			return false;
 		}
+		Repository repository = null;
+		Git git = null;
+		try {
 
-		// 创建仓库
-		InitCommand initCmd = Git.init().setGitDir(repoFile);
-		try (Git git = initCmd.call()) {
-			log.info("[^_^] ok: create repo ok, repo: " + repoFile);
+			repository = FileRepositoryBuilder.create(new File(gitPath, ".git"));
+			repository.create();
+			File localDir = repository.getWorkTree();
+			String localPath = localDir.getPath();
+			log.debug("============================");
+			log.debug("localPath:" + localPath);
+			log.debug("============================");
+
+			git = new Git(repository);
+
+			log.info("[^_^] ok: create repo ok, repo: " + gitPath);
+
+			// 添加 ReadMe 文件,并把主分支设置为 main 分支
+
+			String readMeFileName = localPath + "/ReadMe.md";
+
+			if (StringTool.isNotEmpty(readMeText)) {
+				// 将新文件纳入git管理，不含删除的文件
+				FileTool.writeText(readMeFileName, readMeText);
+				git.add().addFilepattern("ReadMe.md").call();
+				FileTool.delete(readMeFileName);
+			}
+
+			String gitignoreFileName = localPath + "/" + ".gitignore";
+			if (StringTool.isNotEmpty(gitignore)) {
+				String tempGitignoreFileName = templateDir + "/gitignore/" + gitignore;
+				FileTool.copyFile(tempGitignoreFileName, gitignoreFileName);
+				git.add().addFilepattern(".gitignore").call();
+				FileTool.delete(gitignoreFileName);
+			}
+
+			String licenseFileName = localPath + "/" + "LICENSE";
+			if (StringTool.isNotEmpty(license)) {
+				String tempLicenseFileName = templateDir + "/license/" + license;
+
+				FileTool.copyFile(tempLicenseFileName, licenseFileName);
+				git.add().addFilepattern("LICENSE").call();
+				FileTool.delete(licenseFileName);
+			}
+
+			git.commit().setMessage("Initial commit").call();
+			if (hasBranch(git, "master")) {
+				git.branchRename().setOldName("master").setNewName("main").call();
+			}
+
 		} catch (Exception e) {
 			log.error("", e);
 			return false;
+		} finally {
+			OsTool.close(git);
+			OsTool.close(repository);
 		}
+
 		log.info("[^_^] Create Repo ok.");
 		return true;
+	}
+
+	/**
+	 * 判断本地仓库是否存在有某分支，如果没有则创建
+	 */
+	private static boolean hasBranch(Git git, String branchName) throws GitAPIException {
+
+		List<Ref> refList = git.branchList().call();
+		String brancheNameStr = "refs/heads/" + branchName;
+		for (Ref ref : refList) {
+			if (ref.getName().equals(brancheNameStr)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -79,6 +144,7 @@ public class RepoTool {
 			log.error("", e);
 			return false;
 		}
+
 		log.info("[^_^] CreateByclone ok.");
 		return true;
 	}
@@ -250,29 +316,4 @@ public class RepoTool {
 		return branchList;
 	}
 
-	/**
-	 * 
-	 * @param REPO_PATH
-	 * @param request
-	 * @param response
-	 * @throws IOException
-	 */
-	public static void httpServlet(String repoPath, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		File repository = new File(repoPath);
-		Git git;
-		try {
-			git = Git.open(repository);
-			// Create and configure the Git servlet
-			GitServlet gitServlet = new GitServlet();
-			gitServlet.setRepositoryResolver((req, name) -> git.getRepository());
-			gitServlet.service(request, response);
-			
-		} catch ( ServletException e) {
-			log.error("git仓库出现错误",e);
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		}
-		finally {
-			
-		}
-	}
 }
