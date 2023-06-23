@@ -63,6 +63,7 @@ public enum BizFileType {
 		fileType.put(".rpm", BizFileType.EXE.getValue());
 		fileType.put(".bin", BizFileType.EXE.getValue());
 		fileType.put(".deb", BizFileType.EXE.getValue());
+		fileType.put(".dmg", BizFileType.EXE.getValue());
 
 	}
 }
