@@ -39,7 +39,7 @@ public class RepoTool {
 	 */
 	public static boolean create(String repoPath, String readMeText, String gitignore, String license,
 			String templateDir) {
-		String gitPath = repoPath + "/.git";
+
 		File repoFile = new File(repoPath);
 		if (repoFile.exists() && repoFile.isDirectory()) {
 			log.info("[-_-] err: repo is exist, create repo failed, dir: " + repoFile);
@@ -49,7 +49,7 @@ public class RepoTool {
 		Git git = null;
 		try {
 
-			repository = FileRepositoryBuilder.create(new File(gitPath, ".git"));
+			repository = FileRepositoryBuilder.create(new File(repoPath, ".git"));
 			repository.create();
 			File localDir = repository.getWorkTree();
 			String localPath = localDir.getPath();
@@ -59,7 +59,7 @@ public class RepoTool {
 
 			git = new Git(repository);
 
-			log.info("[^_^] ok: create repo ok, repo: " + gitPath);
+			log.info("[^_^] ok: create repo ok, repo: " + repoPath);
 
 			// 添加 ReadMe 文件,并把主分支设置为 main 分支
 
