@@ -25,15 +25,15 @@ public class RepoToolTest {
 	@Order(4)
 	@DisplayName("4.测试创建仓库")
 	void testCreate() {
-		RepoTool.create("D:/000-gitrepo/xingkong/test0", "#test1", "Agda", "Autoconf-exception-2.0",
+		RepoTool.create("c:/gitrepo/xingkong/test0", "", "", "",
 				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
-		RepoTool.create("D:/000-gitrepo/xingkong/test1", "#test1", "Actionscript", null,
+		RepoTool.create("c:/gitrepo/xingkong/test1", "#test1", "Actionscript", null,
 				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
-		RepoTool.create("D:/000-gitrepo/xingkong/test2", "#test2", null, "Apache-2.0",
+		RepoTool.create("c:/gitrepo/xingkong/test2", "#test2", null, "Apache-2.0",
 				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
-		RepoTool.create("D:/000-gitrepo/xingkong/test3", "#test3", "Agda", "Autoconf-exception-2.0",
+		RepoTool.create("c:/gitrepo/xingkong/test3", "#test3", "Agda", "Autoconf-exception-2.0",
 				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
-		RepoTool.create("D:/000-gitrepo/xingkong/test4", "#test4", "Ansible", "CC-BY-NC-SA-3.0-IGO",
+		RepoTool.create("c:/gitrepo/xingkong/test4", "#test4", "Ansible", "CC-BY-NC-SA-3.0-IGO",
 				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
 	}
 

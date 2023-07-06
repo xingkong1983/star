@@ -65,15 +65,20 @@ public class RepoTool {
 
 			String readMeFileName = localPath + "/ReadMe.md";
 
+			boolean isNeedInit = false;
 			if (StringTool.isNotEmpty(readMeText)) {
+
+				isNeedInit = true;
 				// 将新文件纳入git管理，不含删除的文件
 				FileTool.writeText(readMeFileName, readMeText);
 				git.add().addFilepattern("ReadMe.md").call();
 				FileTool.delete(readMeFileName);
+
 			}
 
 			String gitignoreFileName = localPath + "/" + ".gitignore";
 			if (StringTool.isNotEmpty(gitignore)) {
+				isNeedInit = true;
 				String tempGitignoreFileName = templateDir + "/gitignore/" + gitignore;
 				FileTool.copyFile(tempGitignoreFileName, gitignoreFileName);
 				git.add().addFilepattern(".gitignore").call();
@@ -82,16 +87,18 @@ public class RepoTool {
 
 			String licenseFileName = localPath + "/" + "LICENSE";
 			if (StringTool.isNotEmpty(license)) {
+				isNeedInit = true;
 				String tempLicenseFileName = templateDir + "/license/" + license;
 
 				FileTool.copyFile(tempLicenseFileName, licenseFileName);
 				git.add().addFilepattern("LICENSE").call();
 				FileTool.delete(licenseFileName);
 			}
-
-			git.commit().setMessage("Initial commit").call();
-			if (hasBranch(git, "master")) {
-				git.branchRename().setOldName("master").setNewName("main").call();
+			if (isNeedInit) {
+				git.commit().setMessage("Initial commit").call();
+				if (hasBranch(git, "master")) {
+					git.branchRename().setOldName("master").setNewName("main").call();
+				}
 			}
 
 		} catch (Exception e) {
