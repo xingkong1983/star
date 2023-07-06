@@ -150,7 +150,7 @@ public class BizMultipartFile implements IPrint {
 		try {
 
 			if (!f.getParentFile().exists()) {
-				f.mkdirs();
+				f.getParentFile().mkdirs();
 			}
 			if (!f.exists()) {
 				f.createNewFile();
