@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
+import lombok.NoArgsConstructor;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -14,6 +15,7 @@ import com.xingkong1983.star.core.tool.DateTool;
 import lombok.Data;
 
 @Data
+@NoArgsConstructor
 public class RepoFileMo implements IPrint {
 	private static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private String path;

@@ -210,7 +210,7 @@ public class RepoTool {
 	 * @throws Exception
 	 */
 	public static RepoFileMo getRepoFileMoFromRoot(Ref head, RevWalk rw, Git git, Repository db) throws Exception {
-		RepoFileMo repoFileMo = new RepoFileMo(rw);
+		RepoFileMo repoFileMo = new RepoFileMo();
 		RevCommit commit = rw.parseCommit(head.getObjectId());
 		repoFileMo.setPath("");
 		repoFileMo.setIsDir(true);
@@ -252,8 +252,8 @@ public class RepoTool {
 			tw.reset(commit.getTree());
 
 			if (StringTool.isEmpty(path)) {
-				RepoFileMo repoFileMo = getRepoFileMoFromRoot(head, rw, git, db);
-				repoFileMoList.add(repoFileMo);
+				// RepoFileMo repoFileMo = getRepoFileMoFromRoot(head, rw, git, db);
+				// repoFileMoList.add(repoFileMo);
 			} else {
 				while (tw.next()) {
 					String curPath = tw.getPathString();
