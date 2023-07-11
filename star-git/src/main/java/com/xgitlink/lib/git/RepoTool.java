@@ -252,8 +252,8 @@ public class RepoTool {
 			tw.reset(commit.getTree());
 
 			if (StringTool.isEmpty(path)) {
-				// RepoFileMo repoFileMo = getRepoFileMoFromRoot(head, rw, git, db);
-				// repoFileMoList.add(repoFileMo);
+				RepoFileMo repoFileMo = getRepoFileMoFromRoot(head, rw, git, db);
+				repoFileMoList.add(repoFileMo);
 			} else {
 				while (tw.next()) {
 					String curPath = tw.getPathString();
