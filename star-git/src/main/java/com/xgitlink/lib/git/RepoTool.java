@@ -15,6 +15,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 import com.xgitlink.lib.git.mo.RepoFileMo;
@@ -321,6 +322,37 @@ public class RepoTool {
 		}
 
 		return branchList;
+	}
+	
+	/**
+	 * 
+	 * @param originalRepoUrl 原始仓库地址 例如：http://localhost:9100/u8047/test.git 或者 D:/opt/repo/8047/test
+	 * @param newRepoName 新仓库访问地址 例如：http://localhost:9100/u8047/demo.git
+	 * @param newRepoPath 新仓库保存地址 例如：D:/opt/repo/8047/demo
+	 * @param branch
+	 * @return
+	 */
+	public static boolean forkRepository(String originalRepoUrl, String newRepoName, String newRepoPath, String branch) {
+		File repoFile = new File(newRepoPath);
+		// 检查仓库目录是否已经存在
+		if (repoFile.exists() && repoFile.isDirectory()) {
+			log.info("[-_-] err: repo is exist, clone repo failed, dir: " + repoFile);
+			return false;
+		}
+		
+		try {
+			CloneCommand cloneCmd = Git.cloneRepository().setURI(originalRepoUrl).setDirectory(repoFile);
+			if(StringTool.isNotEmpty(branch)) {
+				cloneCmd.setBranch(branch);
+			}
+			Git git = cloneCmd.call();
+			
+			git.remoteAdd().setName("origin").setUri(new URIish(newRepoName)).call();
+		} catch (Exception e) {
+			log.error("Fork仓库失败", e);
+			return false;
+		}
+		return true;
 	}
 
 }
