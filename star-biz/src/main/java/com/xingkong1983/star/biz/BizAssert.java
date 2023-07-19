@@ -86,6 +86,18 @@ public class BizAssert {
 			throw new BizException(this.code, message);
 		}
 	}
+	
+	/**
+	 * 断言字符串不相同
+	 * @param strA
+	 * @param strB
+	 * @param message
+	 */
+	public void isNotEqual( String strA, String strB, String message ) {
+		if (strA.equals(strB)) {
+			throw new BizException(this.code, message);
+		}
+	}
 
 	/**
 	 * 如果对象大小大于0，表示有结果
