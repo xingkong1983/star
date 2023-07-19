@@ -46,18 +46,24 @@ public class BizAssert {
 	 * @param message
 	 */
 	public void isEqualPassword( String password, String dbPassword, String message ) {
+		notNull(password, message);
+		notNull(dbPassword, message);
 		if (!BCrypt.checkpw(password, dbPassword)) {
 			throw new BizException(this.code, message);
 		}
 	}
 
 	public void isEqual( Long a, Long b, String message ) {
+		notNull(a, message);
+		notNull(b, message);
 		if (a.longValue() != b.longValue()) {
 			throw new BizException(this.code, message);
 		}
 	}
 
 	public void isEqual( Integer a, Integer b, String message ) {
+		notNull(a, message);
+		notNull(b, message);
 		if (a.intValue() == b.intValue()) {
 			throw new BizException(this.code, message);
 		}
@@ -82,6 +88,8 @@ public class BizAssert {
 	 * @param message
 	 */
 	public void isEqual( String strA, String strB, String message ) {
+		notNull(strA, message);
+		notNull(strB, message);
 		if (!(strA.equals(strB))) {
 			throw new BizException(this.code, message);
 		}

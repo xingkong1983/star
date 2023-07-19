@@ -201,6 +201,26 @@ public class RepoTool {
 	}
 
 	/**
+	 * 获取根路径的提交日志
+	 * 
+	 * @param head
+	 * @param rw
+	 * @param git
+	 * @param db
+	 * @return
+	 * @throws Exception
+	 */
+	public static RepoFileMo getRepoFileMoFromRoot(Ref head, RevWalk rw, Git git, Repository db) throws Exception {
+		RepoFileMo repoFileMo = new RepoFileMo();
+		RevCommit commit = rw.parseCommit(head.getObjectId());
+		repoFileMo.setPath("");
+		repoFileMo.setIsDir(true);
+		repoFileMo.setFileName("");
+		repoFileMo.setCommitInfo(commit);
+		return repoFileMo;
+	}
+
+	/**
 	 * 获取仓库文件列表 根据仓库地址获取某个分支下某个目录的详细文件列表，只列出当前目录下的所有文件，不进行遍历操作
 	 * 
 	 * @param repoPath   仓库地址
@@ -219,6 +239,7 @@ public class RepoTool {
 		try {
 			db = open(repoPath);
 			git = new Git(db);
+
 			head = db.exactRef(branchName);
 			if (head == null || head.getObjectId() == null) {
 
@@ -231,7 +252,10 @@ public class RepoTool {
 			tw = new TreeWalk(db);
 			tw.reset(commit.getTree());
 
-			if (StringTool.isNotEmpty(path)) {
+			if (StringTool.isEmpty(path)) {
+				RepoFileMo repoFileMo = getRepoFileMoFromRoot(head, rw, git, db);
+				repoFileMoList.add(repoFileMo);
+			} else {
 				while (tw.next()) {
 					String curPath = tw.getPathString();
 					if (tw.isSubtree()) {
@@ -274,11 +298,13 @@ public class RepoTool {
 				}
 			}
 
+			log.info("打印对象：");
+			log.info("---------------------------------------------");
 			for (RepoFileMo curRepoFileMo : repoFileMoList) {
 
 				log.info(curRepoFileMo.toString());
 			}
-
+			log.info("---------------------------------------------");
 		} catch (Exception e) {
 			log.error("错误消息", e);
 		} finally {
