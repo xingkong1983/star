@@ -102,6 +102,8 @@ public class BizAssert {
 	 * @param message
 	 */
 	public void isNotEqual( String strA, String strB, String message ) {
+		notNull(strA, message);
+		notNull(strB, message);
 		if (strA.equals(strB)) {
 			throw new BizException(this.code, message);
 		}
