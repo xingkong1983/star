@@ -9,12 +9,14 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
@@ -352,13 +354,13 @@ public class RepoTool {
 	
 	/**
 	 * 
-	 * @param originalRepoUrl 原始仓库地址 例如：http://localhost:9100/u8047/test.git 或者 D:/opt/repo/8047/test
-	 * @param newRepoName 新仓库访问地址 例如：http://localhost:9100/u8047/demo.git
+	 * @param originalRepoUrl 原始仓库访问地址 例如：http://localhost:9100/u8047/test.git
+	 * @param originalRepoPath 原始仓库地址 例如：D:/opt/repo/8047/test
 	 * @param newRepoPath 新仓库保存地址 例如：D:/opt/repo/8047/demo
 	 * @param branch
 	 * @return
 	 */
-	public static boolean forkRepository(String originalRepoUrl, String newRepoName, String newRepoPath, String branch) {
+	public static boolean forkRepository(String originalRepoUrl, String originalRepoPath, String newRepoPath, String branch) {
 		File repoFile = new File(newRepoPath);
 		// 检查仓库目录是否已经存在
 		if (repoFile.exists() && repoFile.isDirectory()) {
@@ -366,19 +368,49 @@ public class RepoTool {
 			return false;
 		}
 		
+		Git git = null;
 		try {
-			CloneCommand cloneCmd = Git.cloneRepository().setURI(originalRepoUrl).setDirectory(repoFile);
+			CloneCommand cloneCmd = Git.cloneRepository().setURI(originalRepoPath).setDirectory(repoFile);
 			if(StringTool.isNotEmpty(branch)) {
 				cloneCmd.setBranch(branch);
 			}
-			Git git = cloneCmd.call();
+			git = cloneCmd.call();
 			
-			git.remoteAdd().setName("origin").setUri(new URIish(newRepoName)).call();
+			git.remoteAdd().setName("origin").setUri(new URIish(originalRepoUrl)).call();
 		} catch (Exception e) {
 			log.error("Fork仓库失败", e);
 			return false;
+		} finally {
+			OsTool.close(git);
 		}
 		return true;
+	}
+	
+	/**
+	 * 重命名仓库
+	 * @param oldRepoPath
+	 * @param newRepoPath
+	 * @return
+	 */
+	public static boolean rename(String oldRepoPath, String newRepoPath) {
+        try {
+			// 重命名仓库的本地目录
+			File oldRepoDir = new File(oldRepoPath);
+			File newRepoDir = new File(newRepoPath);
+			if (!oldRepoDir.renameTo(newRepoDir)) {
+			    System.err.println("Failed to rename repository directory.");
+			    return false;
+			}
+			log.info("Repository renamed successfully.");
+		} catch (Exception e) {
+			log.error("仓库重命名失败", e);
+			return false;
+		}
+        return true;
+	}
+	
+	public static void main(String[] args) {
+		rename(null, "D:/opt/repo/8047/test");
 	}
 
 }
