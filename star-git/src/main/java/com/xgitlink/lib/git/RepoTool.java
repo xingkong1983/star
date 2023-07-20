@@ -435,9 +435,6 @@ public class RepoTool {
 			        .setGitDir(new File(repoPath + "/.git"))
 			        .build();
 			
-	        // 获取 HEAD 引用对应的 SHA-1 值
-	        ObjectId headId = repo.resolve("HEAD");
-
 			// 获取指定分支或标签的最新版本ID
 			ObjectId branchId = repo.resolve(branchOrTagName);
 
@@ -450,7 +447,7 @@ public class RepoTool {
 			
 	        // 检查缓存文件中的时间是否早于仓库中最后一次提交的时间
 	        Properties props = new Properties();
-	        String cacheFilePath = archiveFileRootPath + "/" + headId.getName() + "/" + branchId.getName();
+	        String cacheFilePath = archiveFileRootPath + "/" + branchId.getName();
 	        
 			archiveFileSavePath = cacheFilePath + repoPath.substring(repoPath.lastIndexOf("/")) + "-" + branchOrTagName + ".zip";
 			
