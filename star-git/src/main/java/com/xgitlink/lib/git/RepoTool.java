@@ -1,22 +1,28 @@
 package com.xgitlink.lib.git;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
+import org.eclipse.jgit.api.ArchiveCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Config;
+import org.eclipse.jgit.archive.ZipFormat;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
@@ -398,7 +404,7 @@ public class RepoTool {
 			File oldRepoDir = new File(oldRepoPath);
 			File newRepoDir = new File(newRepoPath);
 			if (!oldRepoDir.renameTo(newRepoDir)) {
-			    System.err.println("Failed to rename repository directory.");
+				log.info("Failed to rename repository directory.");
 			    return false;
 			}
 			log.info("Repository renamed successfully.");
@@ -409,8 +415,159 @@ public class RepoTool {
         return true;
 	}
 	
+	/**
+	 * 打包成zip包
+	 * @param repoPath 本地仓库路径
+	 * @param branchOrTagName 分支或标签名称
+	 * @param archiveFileRootPath 打包文件存放根路径
+	 * @return
+	 */
+	public static String packZipFile(String repoPath, String branchOrTagName, String archiveFileRootPath) {
+		Git git = null;
+		FileInputStream in = null;
+		FileOutputStream out = null;
+		//压缩包保存地址
+		String archiveFileSavePath = null;
+        try {
+
+			// 打开本地仓库
+			Repository repo = new FileRepositoryBuilder()
+			        .setGitDir(new File(repoPath + "/.git"))
+			        .build();
+			
+	        // 获取 HEAD 引用对应的 SHA-1 值
+	        ObjectId headId = repo.resolve("HEAD");
+
+			// 获取指定分支或标签的最新版本ID
+			ObjectId branchId = repo.resolve(branchOrTagName);
+
+			// 创建Git对象
+			git = new Git(repo);
+			
+			//取出最后一次提交的信息
+			Iterable<RevCommit> commits = git.log().add(branchId).setMaxCount(1).call();
+			RevCommit lastCommit = commits.iterator().next();
+			
+	        // 检查缓存文件中的时间是否早于仓库中最后一次提交的时间
+	        Properties props = new Properties();
+	        String cacheFilePath = archiveFileRootPath + "/" + headId.getName() + "/" + branchId.getName();
+	        
+			archiveFileSavePath = cacheFilePath + repoPath.substring(repoPath.lastIndexOf("/")) + "-" + branchOrTagName + ".zip";
+			
+	        File cacheFile = new File(cacheFilePath + "/cache");
+	        if(!cacheFile.getParentFile().exists()) {
+	        	cacheFile.getParentFile().mkdirs();
+	        }
+	        if (cacheFile.exists()) {
+	            in = new FileInputStream(cacheFile);
+                props.load(in);
+	            String lastPackTimeStr = props.getProperty("lastPackTime");
+	            if (lastPackTimeStr != null) {
+	                Date lastPackTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(lastPackTimeStr);
+	                if (lastCommit.getCommitterIdent().getWhen().compareTo(lastPackTime) <= 0) {
+	                    // 仓库没有更新，直接返回缓存的ZIP包
+	                    String lastPackFilePath = props.getProperty("lastPackFilePath");
+	                    if (lastPackFilePath != null) {
+	                        log.info("The repository has not been updated since the last packaging. Returning the cached ZIP file.");
+	                        return archiveFileSavePath;
+	                    }
+	                }
+	            }
+	        }
+			
+	        //压缩包里面的根文件夹名称
+			String rootFileName = repoPath.substring(repoPath.lastIndexOf("/") + 1) + "-" + branchOrTagName + "/";
+			
+			// 打包成ZIP文件
+			ArchiveCommand.registerFormat("zip", new ZipFormat());
+			git.archive()
+			        .setFormat("zip")
+			        .setTree(branchId)
+			        .setPrefix(rootFileName)
+			        .setOutputStream(new FileOutputStream(archiveFileSavePath))
+			        .call();
+			
+	        // 更新缓存文件
+	        out = new FileOutputStream(cacheFile);
+            props.setProperty("lastPackTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastCommit.getCommitterIdent().getWhen()));
+            props.store(out, "Last packaging information");
+
+		} catch (Exception e) {
+			log.error("仓库创建压缩包失败", e);
+			
+			return null;
+		} finally {
+			OsTool.close(in);
+			OsTool.close(git);
+			OsTool.close(out);
+		}
+        return archiveFileSavePath;
+	}
+	
+	/**
+	 * 获取仓库默认分支
+	 * @param repoPath
+	 * @return
+	 */
+	public static String getDefaultBranchName(String repoPath) {
+		// 获取默认分支名称
+		String defaultBranch = null;
+		Repository repo = null;
+		try {
+			// 打开本地仓库
+			repo = new FileRepositoryBuilder()
+			        .setGitDir(new File(repoPath + "/.git"))
+			        .build();
+			defaultBranch = repo.getFullBranch();
+		} catch (Exception e) {
+			log.error("获取仓库默认分支信息失败", e);
+		} finally {
+			OsTool.close(repo);
+		}
+        return defaultBranch;
+	}
+	
+	/**
+	 * 切换仓库的默认分支
+	 * @param repoPath
+	 * @param branchName 新的默认分支名称
+	 * @return
+	 */
+	public static boolean switchDefaultBranch(String repoPath, String branchName) {
+		Git git = null;
+		try {
+			git = openToGit(repoPath);
+			List<Ref> branches = git.branchList().call();
+		    Ref targetBranch = null;
+		    for (Ref branch : branches) {
+		        if (branch.getName().equals("refs/heads/" + branchName)) {
+		            targetBranch = branch;
+		            break;
+		        }
+		    }
+		    // 切换到目标分支
+		    if (targetBranch != null) {
+		        git.checkout().setName(targetBranch.getName()).call();
+		    }
+		} catch (Exception e) {
+			log.error("获取仓库默认分支信息失败", e);
+			return false;
+		} finally {
+			OsTool.close(git);
+		}
+		return true;
+	}
+	
 	public static void main(String[] args) {
-		rename(null, "D:/opt/repo/8047/test");
+		System.out.println(packZipFile("D:/opt/repo/8047/demo", "main", "D:/test/cache/"));
+		
+//		switchDefaultBranch("D:/opt/repo/8047/demo", "main");
+//		
+//		List<String> list = getBranchList("D:/opt/repo/8047/demo");
+//		list.forEach(item -> {
+//			System.out.println(item);
+//		});
+//		System.out.println(getDefaultBranchName("D:/opt/repo/8047/demo"));
 	}
 
 }
