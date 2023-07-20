@@ -432,7 +432,7 @@ public class RepoTool {
 
 			// 打开本地仓库
 			Repository repo = new FileRepositoryBuilder()
-			        .setGitDir(new File(repoPath + "/.git"))
+			        .setGitDir(new File(repoPath))
 			        .build();
 			
 			// 获取指定分支或标签的最新版本ID
@@ -513,7 +513,7 @@ public class RepoTool {
 		try {
 			// 打开本地仓库
 			repo = new FileRepositoryBuilder()
-			        .setGitDir(new File(repoPath + "/.git"))
+			        .setGitDir(new File(repoPath))
 			        .build();
 			defaultBranch = repo.getFullBranch();
 		} catch (Exception e) {
