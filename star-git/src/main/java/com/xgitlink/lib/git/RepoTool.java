@@ -359,11 +359,11 @@ public class RepoTool {
 	}
 	
 	/**
-	 * 
+	 * Fork一个仓库
 	 * @param originalRepoUrl 原始仓库访问地址 例如：http://localhost:9100/u8047/test.git
-	 * @param originalRepoPath 原始仓库地址 例如：D:/opt/repo/8047/test
-	 * @param newRepoPath 新仓库保存地址 例如：D:/opt/repo/8047/demo
-	 * @param branch
+	 * @param originalRepoPath 原始仓库目录地址 例如：D:/opt/repo/8047/test
+	 * @param newRepoPath 新仓库保存目录地址 例如：D:/opt/repo/8047/demo
+	 * @param branch 分支名(非必填)
 	 * @return
 	 */
 	public static boolean forkRepository(String originalRepoUrl, String originalRepoPath, String newRepoPath, String branch) {
@@ -547,7 +547,7 @@ public class RepoTool {
 		        git.checkout().setName(targetBranch.getName()).call();
 		    }
 		} catch (Exception e) {
-			log.error("获取仓库默认分支信息失败", e);
+			log.error("切换仓库的默认分支信息失败", e);
 			return false;
 		} finally {
 			OsTool.close(git);
@@ -555,8 +555,84 @@ public class RepoTool {
 		return true;
 	}
 	
+	/**
+	 * 修改仓库分支名称
+	 * @param repoPath
+	 * @param oldName
+	 * @param newName
+	 * @return 1为修改成功，0为修改失败，-1为新名称已存在，-2为原分支名称没有找到
+	 */
+	public static int changeBranchName(String repoPath, String oldName, String newName) {
+		int result = 1;
+		Git git = null;
+		try {
+			git = openToGit(repoPath);
+			List<Ref> branches = git.branchList().call();
+			//判断新名称是否已存在
+			for (Ref branch : branches) {
+				if (branch.getName().equals("refs/heads/" + newName)) {
+					result = -1;
+					return result;
+				}
+			}
+			//判断原名称是否已存在
+			boolean flag = false;
+			for (Ref branch : branches) {
+				if (branch.getName().equals("refs/heads/" + oldName)) {
+					flag = true;
+					break;
+				}
+			}
+			if(!flag) {
+				result = -2;
+				return result;
+			}
+			git.branchRename().setOldName(oldName).setNewName(newName).call();
+		} catch (Exception e) {
+			result = 0;
+			log.error("修改仓库分支名称失败", e);
+		} finally {
+			OsTool.close(git);
+		}
+	    
+	    return result;
+	}
+	
+	/**
+	 * 修改仓库分支名称
+	 * @param repoPath
+	 * @param newName
+	 * @return 1为修改成功，0为修改失败，-1为新名称已存在
+	 */
+	public static int changeDefaultBranchName(String repoPath, String newName) {
+		int result = 1;
+		Git git = null;
+		try {
+			git = openToGit(repoPath);
+			List<Ref> branches = git.branchList().call();
+			//判断新名称是否已存在
+			for (Ref branch : branches) {
+				if (branch.getName().equals("refs/heads/" + newName)) {
+					result = -1;
+					return result;
+				}
+			}
+			String oldName = git.getRepository().getBranch();
+			git.branchRename().setOldName(oldName).setNewName(newName).call();
+		} catch (Exception e) {
+			result = 0;
+			log.error("修改仓库默认分支的名称失败", e);
+		} finally {
+			OsTool.close(git);
+		}
+	    
+	    return result;
+	}
+	
 	public static void main(String[] args) {
-		System.out.println(packZipFile("D:/opt/repo/8047/demo", "main", "D:/test/cache/"));
+		//System.out.println(packZipFile("D:/opt/repo/8047/demo", "main", "D:/test/cache/"));
+		
+		//System.out.println(changeBranchName("D:/opt/repo/8047/demo", "demo1", "test"));
 		
 //		switchDefaultBranch("D:/opt/repo/8047/demo", "main");
 //		
@@ -564,7 +640,7 @@ public class RepoTool {
 //		list.forEach(item -> {
 //			System.out.println(item);
 //		});
-//		System.out.println(getDefaultBranchName("D:/opt/repo/8047/demo"));
+		System.out.println(getDefaultBranchName("D:/opt/repo/8047/test/.git"));
 	}
 
 }
