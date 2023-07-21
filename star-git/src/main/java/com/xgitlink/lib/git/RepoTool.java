@@ -382,7 +382,7 @@ public class RepoTool {
 			}
 			git = cloneCmd.call();
 			
-			git.remoteAdd().setName("origin").setUri(new URIish(originalRepoUrl)).call();
+			git.remoteAdd().setName("upstream").setUri(new URIish(originalRepoUrl)).call();
 		} catch (Exception e) {
 			log.error("Fork仓库失败", e);
 			return false;
