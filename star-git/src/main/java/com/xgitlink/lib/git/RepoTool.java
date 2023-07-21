@@ -449,7 +449,10 @@ public class RepoTool {
 	        Properties props = new Properties();
 	        String cacheFilePath = archiveFileRootPath + "/" + branchId.getName();
 	        
-			archiveFileSavePath = cacheFilePath + repoPath.substring(repoPath.lastIndexOf("/")) + "-" + branchOrTagName + ".zip";
+	        //获取.git文件夹的上一级目录
+	        String repoPathTemp = repoPath.substring(0, repoPath.lastIndexOf("/"));
+	        
+			archiveFileSavePath = cacheFilePath + repoPathTemp.substring(repoPathTemp.lastIndexOf("/")) + "-" + branchOrTagName + ".zip";
 			
 	        File cacheFile = new File(cacheFilePath + "/cache");
 	        if(!cacheFile.getParentFile().exists()) {
@@ -461,19 +464,16 @@ public class RepoTool {
 	            String lastPackTimeStr = props.getProperty("lastPackTime");
 	            if (lastPackTimeStr != null) {
 	                Date lastPackTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(lastPackTimeStr);
+	                // 仓库没有更新，直接返回缓存的ZIP包
 	                if (lastCommit.getCommitterIdent().getWhen().compareTo(lastPackTime) <= 0) {
-	                    // 仓库没有更新，直接返回缓存的ZIP包
-	                    String lastPackFilePath = props.getProperty("lastPackFilePath");
-	                    if (lastPackFilePath != null) {
-	                        log.info("The repository has not been updated since the last packaging. Returning the cached ZIP file.");
-	                        return archiveFileSavePath;
-	                    }
+                        log.info("The repository has not been updated since the last packaging. Returning the cached ZIP file.");
+                        return archiveFileSavePath;
 	                }
 	            }
 	        }
 			
 	        //压缩包里面的根文件夹名称
-			String rootFileName = repoPath.substring(repoPath.lastIndexOf("/") + 1) + "-" + branchOrTagName + "/";
+			String rootFileName = repoPathTemp.substring(repoPathTemp.lastIndexOf("/") + 1) + "-" + branchOrTagName + "/";
 			
 			// 打包成ZIP文件
 			ArchiveCommand.registerFormat("zip", new ZipFormat());
