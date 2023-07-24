@@ -19,6 +19,7 @@ import org.eclipse.jgit.archive.ZipFormat;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -619,6 +620,15 @@ public class RepoTool {
 			}
 			String oldName = git.getRepository().getBranch();
 			git.branchRename().setOldName(oldName).setNewName(newName).call();
+			
+	        // 更新仓库的默认分支
+	        Repository repository = git.getRepository();
+	        RefUpdate refUpdate = repository.updateRef("HEAD");
+	        refUpdate.setNewObjectId(refUpdate.getOldObjectId());
+	        refUpdate.setForceUpdate(true);
+	        refUpdate.setRefLogMessage("update default branch to " + newName, true);
+	        refUpdate.update();
+	        
 		} catch (Exception e) {
 			result = 0;
 			log.error("修改仓库默认分支的名称失败", e);
