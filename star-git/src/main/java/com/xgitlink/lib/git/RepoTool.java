@@ -5,11 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.xgitlink.lib.git.mo.CommitVo;
 import org.eclipse.jgit.api.ArchiveCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
@@ -603,7 +604,31 @@ public class RepoTool {
 	    
 	    return result;
 	}
-	
+
+	public static List<CommitVo> getCommitList(String repoPath, String branchName) {
+		List<CommitVo> result = new ArrayList<>();
+		try {
+			Git git = null;
+			git = openToGit(repoPath);
+			Iterable<RevCommit> commits = git.log().add(git.getRepository().resolve(branchName)).call();
+			for (RevCommit commit : commits) {
+				CommitVo commitVo = new CommitVo();
+				commitVo.setCommitId(commit.getId().getName());
+				commitVo.setName(commit.getAuthorIdent().getName());
+				commitVo.setEmail(commit.getAuthorIdent().getEmailAddress());
+				commitVo.setCreateTime(LocalDateTime.ofInstant(commit.getAuthorIdent().getWhen().toInstant(), ZoneOffset.ofHours(8)));
+				commitVo.setMessage(commit.getFullMessage());
+				commitVo.setHash(commitVo.getCommitId());
+				result.add(commitVo);
+			}
+		} catch (Exception e) {
+			log.error("获取提交记录失败",e);
+		}
+		return result.stream().sorted((a, b) -> {
+			return b.getCreateTime().compareTo(a.getCreateTime());
+		}).collect(Collectors.toList());
+	}
+
 	/**
 	 * 修改仓库分支名称
 	 * @param repoPath
