@@ -104,12 +104,17 @@ public class RepoTool {
 				git.add().addFilepattern("LICENSE").call();
 				FileTool.delete(licenseFileName);
 			}
+			
+			String defaultBranchName = "main";
 			if (isNeedInit) {
 				git.commit().setMessage("Initial commit").call();
 				if (hasBranch(git, "master")) {
-					git.branchRename().setOldName("master").setNewName("main").call();
+					git.branchRename().setOldName("master").setNewName(defaultBranchName).call();
 				}
 			}
+			
+			RefUpdate refUpdate = repository.updateRef("HEAD");
+	        refUpdate.link("refs/heads/" + defaultBranchName);
 
 		} catch (Exception e) {
 			log.error("", e);
