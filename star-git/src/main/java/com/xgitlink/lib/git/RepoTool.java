@@ -7,14 +7,20 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import com.xgitlink.lib.git.mo.CommitVo;
+
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.ArchiveCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.archive.ZipFormat;
 import org.eclipse.jgit.lib.Constants;
@@ -667,6 +673,65 @@ public class RepoTool {
 		}
 	    
 	    return result;
+	}
+	
+	/**
+	 * 删除仓库
+	 * @param repoPath
+	 * @return
+	 */
+	public static boolean deleteRepo(String repoPath) {
+		Git git = null;
+        try {
+			// 打开仓库
+			git = openToGit(repoPath);
+			// 删除仓库
+			File repoDir = git.getRepository().getDirectory().getParentFile();
+			if (repoDir.exists()) {
+				FileUtils.deleteDirectory(repoDir);
+				log.info("Repository deleted successfully.");
+			} else {
+				log.info("Repository does not exist.");
+			}
+		} catch (IOException e) {
+			log.error("删除仓库失败", e);
+			return false;
+		} finally {
+			OsTool.close(git);
+		}
+        return true;
+	}
+	
+	/**
+	 * 同步原始仓库代码
+	 * @param repoPath
+	 */
+	public static void syncUpstream(String repoPath) {
+		Git git = null;
+        try {
+			// 打开本地Fork仓库
+			Repository localRepo = new FileRepositoryBuilder()
+			        .setGitDir(new File(repoPath))
+			        .build();
+			git = new Git(localRepo);
+			// 拉取原始仓库的更新
+			git.fetch().setRemote("upstream").call();
+			// 获取本地主分支和远程主分支的引用
+			Ref upstreamBranch = localRepo.exactRef("refs/remotes/upstream/main");
+
+			// 合并原始仓库的更新到本地主分支
+			MergeResult mergeResult = git.merge()
+			        .include(upstreamBranch.getObjectId())
+			        .call();
+
+			if (mergeResult.getMergeStatus().isSuccessful()) {
+			    System.out.println("Synced successfully.");
+			} else {
+			    System.out.println("Sync failed.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) {
