@@ -31,6 +31,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
@@ -705,19 +706,29 @@ public class RepoTool {
 	/**
 	 * 同步原始仓库代码
 	 * @param repoPath
+	 * @param branchName
+	 * @param upstreamUrl 原始仓库地址(可选，优先级高于仓库配置文件中的)
 	 */
-	public static void syncUpstream(String repoPath) {
+	public static boolean syncUpstream(String repoPath, String branchName, String upstreamUrl) {
 		Git git = null;
+		Repository localRepo = null;
         try {
 			// 打开本地Fork仓库
-			Repository localRepo = new FileRepositoryBuilder()
-			        .setGitDir(new File(repoPath))
-			        .build();
+			localRepo = new FileRepositoryBuilder().setGitDir(new File(repoPath)).build();
 			git = new Git(localRepo);
+			
+			//判断是否需要更新配置文件中的原始仓库地址
+			if(StringTool.isNotEmpty(upstreamUrl)) {
+				String curUpstreamUrl = getUpstreamUrl(git);
+				if(!upstreamUrl.equals(curUpstreamUrl)) {
+					git.remoteSetUrl().setRemoteName("upstream").setRemoteUri(new URIish(upstreamUrl)).call();
+				}
+			}
+			
 			// 拉取原始仓库的更新
 			git.fetch().setRemote("upstream").call();
 			// 获取本地主分支和远程主分支的引用
-			Ref upstreamBranch = localRepo.exactRef("refs/remotes/upstream/main");
+			Ref upstreamBranch = localRepo.exactRef("refs/remotes/upstream/" + branchName);
 
 			// 合并原始仓库的更新到本地主分支
 			MergeResult mergeResult = git.merge()
@@ -725,13 +736,51 @@ public class RepoTool {
 			        .call();
 
 			if (mergeResult.getMergeStatus().isSuccessful()) {
-			    System.out.println("Synced successfully.");
+				log.info("Synced successfully.");
 			} else {
-			    System.out.println("Sync failed.");
+				log.info("Sync failed.");
+				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("同步原始仓库代码失败",e);
+			return false;
+		} finally {
+			OsTool.close(git);
+			OsTool.close(localRepo);
 		}
+        return true;
+	}
+	
+	/**
+	 * 从配置文件中获取原始仓库地址
+	 * @param git
+	 * @return
+	 */
+	public static String getUpstreamUrl(Git git) {
+		String url = null;
+		if(git == null) {
+			return url;
+		}
+		try {
+			// 获取所有RemoteConfig对象
+			List<RemoteConfig> remoteConfigs = git.remoteList().call();
+			if(remoteConfigs == null || remoteConfigs.isEmpty()) {
+				return url;
+			}
+			// 遍历RemoteConfig对象，查找upstream信息
+			for (RemoteConfig remoteConfig : remoteConfigs) {
+				if("upstream".equals(remoteConfig.getName())) {
+					List<URIish> urIishs = remoteConfig.getURIs();
+					for(URIish item : urIishs) {
+						url = item.getPath();
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("从配置文件中获取原始仓库地址失败",e);
+		}
+		return url;
 	}
 	
 	public static void main(String[] args) {
@@ -745,7 +794,8 @@ public class RepoTool {
 //		list.forEach(item -> {
 //			System.out.println(item);
 //		});
-		System.out.println(getDefaultBranchName("D:/opt/repo/8047/test/.git"));
+//		System.out.println(getDefaultBranchName("D:/opt/repo/8047/test/.git"));
+		syncUpstream("D:\\opt\\repo\\8047\\test1\\.git", "main", "D:/opt/repo/8048/test");
 	}
 
 }
