@@ -174,7 +174,6 @@ public class RepoTool {
 			log.error("", e);
 			return false;
 		}
-
 		log.info("[^_^] CreateByclone ok.");
 		return true;
 	}
@@ -395,7 +394,6 @@ public class RepoTool {
 				cloneCmd.setBranch(branch);
 			}
 			git = cloneCmd.call();
-			
 			git.remoteAdd().setName("upstream").setUri(new URIish(originalRepoUrl)).call();
 		} catch (Exception e) {
 			log.error("Fork仓库失败", e);
@@ -614,9 +612,7 @@ public class RepoTool {
 
 	public static List<CommitVo> getCommitList(String repoPath, String branchName) {
 		List<CommitVo> result = new ArrayList<>();
-		try {
-			Git git = null;
-			git = openToGit(repoPath);
+		try (Git  git = openToGit(repoPath)){
 			Iterable<RevCommit> commits = git.log().add(git.getRepository().resolve(branchName)).call();
 			for (RevCommit commit : commits) {
 				CommitVo commitVo = new CommitVo();
@@ -634,6 +630,19 @@ public class RepoTool {
 		return result.stream().sorted((a, b) -> {
 			return b.getCreateTime().compareTo(a.getCreateTime());
 		}).collect(Collectors.toList());
+	}
+
+	public static List<String> getTagList(String repoPath) {
+		List<String> result = new ArrayList<>();
+		try (Git git = openToGit(repoPath)){
+			Iterable<Ref> tagList = git.tagList().call();
+			for (Ref tag : tagList) {
+				result.add(tag.getName());
+			}
+		} catch (Exception e) {
+			log.error("获取tag记录失败",e);
+		}
+		return result;
 	}
 
 	/**
