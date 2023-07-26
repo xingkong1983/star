@@ -168,6 +168,7 @@ public class RepoTool {
 
 		// 创建仓库
 		CloneCommand cloneCmd = Git.cloneRepository().setURI(remoteRepoUrl).setGitDir(repoFile);
+		cloneCmd.setNoCheckout(true);
 		try (Git git = cloneCmd.call()) {
 			log.info("[^_^] ok: clone repo ok, repo: " + repoFile);
 		} catch (Exception e) {
