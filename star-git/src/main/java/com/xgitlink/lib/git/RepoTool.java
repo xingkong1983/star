@@ -1,6 +1,10 @@
 package com.xgitlink.lib.git;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -10,10 +14,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import com.xgitlink.lib.git.mo.CommitVo;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.ArchiveCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
@@ -22,7 +23,12 @@ import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.archive.ZipFormat;
-import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.RefUpdate;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -31,6 +37,7 @@ import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
+import com.xgitlink.lib.git.mo.CommitVo;
 import com.xgitlink.lib.git.mo.RepoFileMo;
 import com.xingkong1983.star.core.tool.FileTool;
 import com.xingkong1983.star.core.tool.OsTool;
@@ -375,12 +382,11 @@ public class RepoTool {
 	/**
 	 * Fork一个仓库
 	 * @param originalRepoUrl 原始仓库访问地址 例如：http://localhost:9100/u8047/test.git
-	 * @param originalRepoPath 原始仓库目录地址 例如：D:/opt/repo/8047/test
-	 * @param newRepoPath 新仓库保存目录地址 例如：D:/opt/repo/8047/demo
+	 * @param newRepoPath 新仓库保存目录地址 例如：D:/opt/repo/8047/demo/.git
 	 * @param branch 分支名(非必填)
 	 * @return
 	 */
-	public static boolean forkRepository(String originalRepoUrl, String originalRepoPath, String newRepoPath, String branch) {
+	public static boolean forkRepository(String originalRepoUrl, String newRepoPath, String branch) {
 		File repoFile = new File(newRepoPath);
 		// 检查仓库目录是否已经存在
 		if (repoFile.exists() && repoFile.isDirectory()) {
@@ -390,7 +396,8 @@ public class RepoTool {
 		
 		Git git = null;
 		try {
-			CloneCommand cloneCmd = Git.cloneRepository().setURI(originalRepoPath).setDirectory(repoFile);
+			CloneCommand cloneCmd = Git.cloneRepository().setURI(originalRepoUrl).setDirectory(repoFile);
+			cloneCmd.setMirror(true);
 			if(StringTool.isNotEmpty(branch)) {
 				cloneCmd.setBranch(branch);
 			}
