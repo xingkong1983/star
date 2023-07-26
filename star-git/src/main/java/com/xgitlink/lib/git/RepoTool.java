@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.ArchiveCommand;
 import org.eclipse.jgit.api.CloneCommand;
+import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.MergeResult;
@@ -51,7 +52,7 @@ public class RepoTool {
 	 * @return 创建成功返回为真，创建失败返回为假
 	 */
 	public static boolean create(String repoPath, String readMeText, String gitignore, String license,
-			String templateDir) {
+			String templateDir, String committerName, String committerEmail) {
 
 		File repoFile = new File(repoPath);
 		if (repoFile.exists() && repoFile.isDirectory()) {
@@ -110,7 +111,11 @@ public class RepoTool {
 			
 			String defaultBranchName = "main";
 			if (isNeedInit) {
-				git.commit().setMessage("Initial commit").call();
+				CommitCommand commitCommand = git.commit();
+				if(StringTool.isNotEmpty(committerName) || StringTool.isNotEmpty(committerEmail)) {
+					commitCommand.setCommitter(committerName, committerEmail);
+				}
+				commitCommand.setMessage("Initial commit").call();
 				if (hasBranch(git, "master")) {
 					git.branchRename().setOldName("master").setNewName(defaultBranchName).call();
 				}
