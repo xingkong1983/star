@@ -26,15 +26,15 @@ public class RepoToolTest {
 	@DisplayName("4.测试创建仓库")
 	void testCreate() {
 		RepoTool.create("c:/gitrepo/xingkong/test0", "", "", "",
-				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
+				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/", null, null);
 		RepoTool.create("c:/gitrepo/xingkong/test1", "#test1", "Actionscript", null,
-				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
+				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/", null, null);
 		RepoTool.create("c:/gitrepo/xingkong/test2", "#test2", null, "Apache-2.0",
-				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
+				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/", null, null);
 		RepoTool.create("c:/gitrepo/xingkong/test3", "#test3", "Agda", "Autoconf-exception-2.0",
-				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
+				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/", null, null);
 		RepoTool.create("c:/gitrepo/xingkong/test4", "#test4", "Ansible", "CC-BY-NC-SA-3.0-IGO",
-				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/");
+				"D:/001-xplaza/x-bbs/x-bbs-code/x-gitcore-data/option/", null, null);
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class RepoToolTest {
 	@Order(3)
 	@DisplayName("3.测试通过网络克隆一个仓库")
 	void createByclone() {
-		RepoTool.createByclone("c:/gitrepo/xingkong/test4", "https://github.com/xingkong1983/Tailwind-CSS-Lab.git");
+		RepoTool.createByclone("D:\\test\\t1", "http://dev.xplaza.cn:9100/u8047/t1.git");
 	}
 
 	@Test
