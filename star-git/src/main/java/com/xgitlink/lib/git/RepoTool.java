@@ -1,9 +1,6 @@
 package com.xgitlink.lib.git;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -16,6 +13,7 @@ import java.util.stream.Collectors;
 import com.xgitlink.lib.git.mo.CommitVo;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.ArchiveCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
@@ -23,12 +21,9 @@ import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.archive.ZipFormat;
-import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.RefUpdate;
-import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.RemoteConfig;
@@ -643,6 +638,24 @@ public class RepoTool {
 			log.error("获取tag记录失败",e);
 		}
 		return result;
+	}
+
+	public static ByteArrayInputStream getFile(String repoPath, String branchName, String filePath) {
+		try (Git git = openToGit(repoPath);
+			 Repository repository = git.getRepository();
+			 RevWalk revWalk = new RevWalk(repository)){
+			ObjectId headId = repository.resolve(branchName);
+			RevCommit commit = revWalk.parseCommit(headId);
+			RevTree tree = commit.getTree();
+			try (TreeWalk treeWalk = TreeWalk.forPath(repository, filePath, tree)){
+				ObjectId objectId = treeWalk.getObjectId(0);
+				ObjectLoader loader = repository.open(objectId);
+				return new ByteArrayInputStream(loader.getBytes());
+			}
+		} catch (Exception e) {
+			log.error("获取文件失败",e);
+		}
+		return null;
 	}
 
 	/**
