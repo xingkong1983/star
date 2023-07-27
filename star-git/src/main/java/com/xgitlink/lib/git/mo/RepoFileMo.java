@@ -27,12 +27,15 @@ public class RepoFileMo implements IPrint {
 	private LocalDateTime time;
 	private String log;
 	private String sha1;
+
+	private String commitSha1;
 	
 
 	public RepoFileMo(TreeWalk treeWalk ) {
 		this.fileName = treeWalk.getNameString();
 		this.path = treeWalk.getPathString();
 		this.isDir = treeWalk.isSubtree() ? true : false;
+		this.sha1 = treeWalk.getObjectId(0).getName();
 	}
 	
 	public void setCommitInfo(RevCommit commit) {
@@ -41,7 +44,7 @@ public class RepoFileMo implements IPrint {
 		this.email = authoIdent.getEmailAddress();
 		this.time =DateTool.date2LocalDateTime(authoIdent.getWhen());
 		this.log = commit.getShortMessage();
-		this.sha1 =   commit.getId().name();
+		this.commitSha1 = commit.getId().name();
 	}
 	
 	public String toString() {
