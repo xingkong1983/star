@@ -23,7 +23,6 @@ import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.archive.ZipFormat;
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Ref;
@@ -219,10 +218,10 @@ public class RepoTool {
 	 * @return
 	 * @throws Exception
 	 */
-	public static RepoFileMo getRepoFileMoFromTreeWalk(TreeWalk tw, Git git, Repository db) throws Exception {
+	public static RepoFileMo getRepoFileMoFromTreeWalk(TreeWalk tw, Git git, Repository db, String branchName) throws Exception {
 		String curPath = tw.getPathString();
 		RepoFileMo repoFileMo = new RepoFileMo(tw);
-		Iterable<RevCommit> commitLog = git.log().add(db.resolve(Constants.HEAD)).addPath(curPath).call();
+		Iterable<RevCommit> commitLog = git.log().add(db.resolve(branchName)).addPath(curPath).call();
 		for (RevCommit revCommit : commitLog) {
 			repoFileMo.setCommitInfo(revCommit);
 		}
@@ -300,7 +299,7 @@ public class RepoTool {
 						} else {
 							log.debug("找到路径：" + curPath);
 							if (path.startsWith(curPath)) {
-								RepoFileMo repoFileMo = getRepoFileMoFromTreeWalk(tw, git, db);
+								RepoFileMo repoFileMo = getRepoFileMoFromTreeWalk(tw, git, db, branchName);
 								repoFileMoList.add(repoFileMo);
 								tw.enterSubtree();
 							}
@@ -322,7 +321,7 @@ public class RepoTool {
 						log.debug("当前的文件是：" + curPath);
 					}
 
-					RepoFileMo repoFileMo = getRepoFileMoFromTreeWalk(tw, git, db);
+					RepoFileMo repoFileMo = getRepoFileMoFromTreeWalk(tw, git, db, branchName);
 					repoFileMoList.add(repoFileMo);
 				}
 			}
@@ -405,6 +404,15 @@ public class RepoTool {
 			git.remoteAdd().setName("upstream").setUri(new URIish(originalRepoUrl)).call();
 		} catch (Exception e) {
 			log.error("Fork仓库失败", e);
+			try {
+				if(newRepoPath.endsWith("/.git") || newRepoPath.endsWith("/.git/")) {
+					FileUtils.deleteDirectory(repoFile.getParentFile());
+				} else {
+					FileUtils.deleteDirectory(repoFile);
+				}
+			} catch (IOException e1) {
+				log.error("删除无效文件目录失败", e1);
+			}			
 			return false;
 		} finally {
 			OsTool.close(git);
@@ -818,6 +826,52 @@ public class RepoTool {
 		return url;
 	}
 	
+	/**
+	 * 创建分支
+	 * @param repoPath
+	 * @param branchName
+	 * @return
+	 */
+	public static boolean createBranch(String repoPath, String branchName) {
+		Git git = null;
+		try {
+			git = openToGit(repoPath);
+			git.branchCreate().setName(branchName).call();
+		} catch (Exception e) {
+			log.error("创建分支失败",e);
+			return false;
+		} finally {
+			OsTool.close(git);
+		}
+		return true;
+	}
+	
+	/**
+	 * 删除分支
+	 * @param repoPath
+	 * @param branchName
+	 * @return
+	 */
+	public static boolean deleteBranch(String repoPath, String branchName) {
+		Git git = null;
+		boolean result = false;
+		try {
+			git = openToGit(repoPath);
+			List<String> branchs = git.branchDelete().setBranchNames(branchName).setForce(true).call();
+			for (String name : branchs) {
+				if(("refs/heads/" + branchName).equals(name)) {
+					result = true;
+					break;
+				}
+			}
+		} catch (Exception e) {
+			log.error("删除分支失败",e);
+		} finally {
+			OsTool.close(git);
+		}
+		return result;
+	}
+	
 	public static void main(String[] args) {
 		//System.out.println(packZipFile("D:/opt/repo/8047/demo", "main", "D:/test/cache/"));
 		
@@ -830,7 +884,9 @@ public class RepoTool {
 //			System.out.println(item);
 //		});
 //		System.out.println(getDefaultBranchName("D:/opt/repo/8047/test/.git"));
-		syncUpstream("D:\\opt\\repo\\8047\\test1\\.git", "main", "D:/opt/repo/8048/test");
+		//syncUpstream("D:\\opt\\repo\\8047\\test1\\.git", "main", "D:/opt/repo/8048/test");
+		createBranch("D:\\opt\\repo\\8048\\demo1\\.git", "test");
+//		deleteBranch("D:\\opt\\repo\\8048\\demo1\\.git", "test123");
 	}
 
 }
