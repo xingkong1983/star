@@ -1,7 +1,9 @@
 package com.xingkong1983.star.biz;
 
-import com.xingkong1983.star.biz.vo.BizCode;
+import com.xingkong1983.star.biz.vo.BizErrorCode;
+import com.xingkong1983.star.biz.vo.BizErrorFormCode;
 import com.xingkong1983.star.biz.vo.BizResponseVo;
+import com.xingkong1983.star.biz.vo.BizSuccessCode;
 import com.xingkong1983.star.core.tool.OsTool;
 
 import lombok.Data;
@@ -15,23 +17,23 @@ public class BizTool {
 	// ==================================================
 	// 响应成功常量定义
 	// ==================================================
-	public final static BizCode OK = new BizCode(200);
-	public final static BizCode OK_LOGIN = new BizCode(2000);
-	public final static BizCode OK_LOGOUT = new BizCode(2001);
-	public final static BizCode OK_FORM = new BizCode(2002);
-	public final static BizCode OK_UPLOAD = new BizCode(2003);
+	public final static BizSuccessCode OK = new BizSuccessCode(200);
+	public final static BizSuccessCode OK_LOGIN = new BizSuccessCode(2000);
+	public final static BizSuccessCode OK_LOGOUT = new BizSuccessCode(2001);
+	public final static BizSuccessCode OK_FORM = new BizSuccessCode(2002);
+	public final static BizSuccessCode OK_UPLOAD = new BizSuccessCode(2003);
 
 	// ==================================================
 	// 响应错误常量定义
 	// ==================================================
-	public final static BizCode ERR = new BizCode(500);
-	public final static BizCode ERR_NOLOGIN = new BizCode(5000);
-	public final static BizCode ERR_LOGIN = new BizCode(5001);
-	public final static BizCode ERR_LOGOUT = new BizCode(5002);
-	public final static BizCode ERR_FORM = new BizCode(5003);
-	public final static BizCode ERR_SMS_CODE = new BizCode(5004);
-	public final static BizCode ERR_UPLOAD = new BizCode(5005);
-	public final static BizCode ERR_NO_COMPANY = new BizCode(5006);
+	public final static BizErrorCode ERR = new BizErrorCode(500);
+	public final static BizErrorCode ERR_NOLOGIN = new BizErrorCode(5000);
+	public final static BizErrorCode ERR_LOGIN = new BizErrorCode(5001);
+	public final static BizErrorCode ERR_LOGOUT = new BizErrorCode(5002);
+	public final static BizErrorFormCode ERR_FORM = new BizErrorFormCode(5003);
+	public final static BizErrorCode ERR_SMS_CODE = new BizErrorCode(5004);
+	public final static BizErrorCode ERR_UPLOAD = new BizErrorCode(5005);
+	public final static BizErrorCode ERR_NO_COMPANY = new BizErrorCode(5006);
 
 	// ==================================================
 	// 断言定义
