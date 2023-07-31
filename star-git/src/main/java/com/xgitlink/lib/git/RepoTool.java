@@ -221,7 +221,18 @@ public class RepoTool {
 	public static RepoFileMo getRepoFileMoFromTreeWalk(TreeWalk tw, Git git, Repository db, String branchName) throws Exception {
 		String curPath = tw.getPathString();
 		RepoFileMo repoFileMo = new RepoFileMo(tw);
-		Iterable<RevCommit> commitLog = git.log().add(db.resolve(branchName)).addPath(curPath).call();
+		Iterable<RevCommit> commitLog = null;
+		if(branchName.startsWith("refs/tags/")) {
+			try (RevWalk rw = new RevWalk(db)) {
+				RevCommit commit = rw.parseCommit(db.resolve(branchName));
+				commitLog = git.log().add(commit).addPath(curPath).call();
+			}
+		} else {
+			commitLog = git.log().add(db.resolve(branchName)).addPath(curPath).call();
+		}
+		if(commitLog == null) {
+			return repoFileMo;
+		}
 		for (RevCommit revCommit : commitLog) {
 			repoFileMo.setCommitInfo(revCommit);
 		}
