@@ -17,7 +17,7 @@ public class ValidTool {
 	}
 
 	public final static class email {
-		public final static String regx = "^\\\\w+(\\\\w|[.]\\\\w+)+@\\\\w+([.]\\\\w+){1,3}";
+		public final static String regx = "^\\w+(\\w|[.]\\w+)+@\\w+([.]\\w+){1,3}";
 		public final static Pattern pattern = Pattern.compile(regx);
 		public final static String message = "请输入正确的邮箱";
 	}
