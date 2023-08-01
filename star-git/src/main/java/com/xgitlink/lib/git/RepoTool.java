@@ -457,6 +457,7 @@ public class RepoTool {
 		Git git = null;
 		FileInputStream in = null;
 		FileOutputStream out = null;
+		RevWalk rw = null;
 		//压缩包保存地址
 		String archiveFileSavePath = null;
         try {
@@ -465,26 +466,29 @@ public class RepoTool {
 			Repository repo = new FileRepositoryBuilder()
 			        .setGitDir(new File(repoPath))
 			        .build();
-			
+
 			// 获取指定分支或标签的最新版本ID
 			ObjectId branchId = repo.resolve(branchOrTagName);
 
+			rw = new RevWalk(repo);
+			RevCommit commit = rw.parseCommit(repo.resolve(branchOrTagName));
+
 			// 创建Git对象
 			git = new Git(repo);
-			
+
 			//取出最后一次提交的信息
-			Iterable<RevCommit> commits = git.log().add(branchId).setMaxCount(1).call();
+			Iterable<RevCommit> commits = git.log().add(commit).setMaxCount(1).call();
 			RevCommit lastCommit = commits.iterator().next();
-			
+
 	        // 检查缓存文件中的时间是否早于仓库中最后一次提交的时间
 	        Properties props = new Properties();
 	        String cacheFilePath = archiveFileRootPath + "/" + branchId.getName();
-	        
+
 	        //获取.git文件夹的上一级目录
 	        String repoPathTemp = repoPath.substring(0, repoPath.lastIndexOf("/"));
-	        
+
 			archiveFileSavePath = cacheFilePath + repoPathTemp.substring(repoPathTemp.lastIndexOf("/")) + "-" + branchOrTagName + ".zip";
-			
+
 	        File cacheFile = new File(cacheFilePath + "/cache");
 	        if(!cacheFile.getParentFile().exists()) {
 	        	cacheFile.getParentFile().mkdirs();
@@ -502,10 +506,10 @@ public class RepoTool {
 	                }
 	            }
 	        }
-			
+
 	        //压缩包里面的根文件夹名称
 			String rootFileName = repoPathTemp.substring(repoPathTemp.lastIndexOf("/") + 1) + "-" + branchOrTagName + "/";
-			
+
 			// 打包成ZIP文件
 			ArchiveCommand.registerFormat("zip", new ZipFormat());
 			git.archive()
@@ -514,7 +518,7 @@ public class RepoTool {
 			        .setPrefix(rootFileName)
 			        .setOutputStream(new FileOutputStream(archiveFileSavePath))
 			        .call();
-			
+
 	        // 更新缓存文件
 	        out = new FileOutputStream(cacheFile);
             props.setProperty("lastPackTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastCommit.getCommitterIdent().getWhen()));
@@ -522,12 +526,13 @@ public class RepoTool {
 
 		} catch (Exception e) {
 			log.error("仓库创建压缩包失败", e);
-			
+
 			return null;
 		} finally {
 			OsTool.close(in);
 			OsTool.close(git);
 			OsTool.close(out);
+			OsTool.close(rw);
 		}
         return archiveFileSavePath;
 	}
