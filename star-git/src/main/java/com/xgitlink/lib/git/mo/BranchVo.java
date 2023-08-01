@@ -52,4 +52,9 @@ public class BranchVo {
 	 */
 	private int commitCount;
 	
+	/**
+	 * 是否是默认分支
+	 */
+	private boolean isDefault;
+	
 }

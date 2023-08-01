@@ -907,6 +907,7 @@ public class RepoTool {
 			git = openToGit(repoPath);
 			List<Ref> refList = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
 			Repository repository = git.getRepository();
+			String defaultBranchName = repository.getFullBranch();
 			BranchVo branchVo = null;
 			Instant since = null;
 			if(statTime == null) {
@@ -923,6 +924,9 @@ public class RepoTool {
 				branchVo = new BranchVo();
 				branchVo.setName(ref.getName());
 				branchVo.setId(ref.getObjectId().getName());
+				if(StringTool.isNotEmpty(defaultBranchName) && defaultBranchName.equals(ref.getName())) {
+					branchVo.setDefault(true);
+				}
 				
 				// 获取分支的创建者信息
 				branchCreator = git.getRepository().parseCommit(ref.getObjectId()).getAuthorIdent();
