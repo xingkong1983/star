@@ -327,9 +327,11 @@ public final class DateTool {
 	}
 
 	public static LocalDateTime date2LocalDateTime(Date date) {
+		if (date == null) {
+			return null;
+		}
 		Instant instant = date.toInstant();
 		ZoneId zoneId = ZoneId.systemDefault();
-
 		LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
 		return localDateTime;
 	}
