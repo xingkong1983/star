@@ -839,6 +839,13 @@ public class RepoTool {
 		Git git = null;
 		try {
 			git = openToGit(repoPath);
+			List<Ref> branches = git.branchList().call();
+			//判断新名称是否已存在
+			for (Ref branch : branches) {
+				if (branch.getName().equals("refs/heads/" + branchName)) {
+					return false;
+				}
+			}
 			git.branchCreate().setName(branchName).call();
 		} catch (Exception e) {
 			log.error("创建分支失败",e);
