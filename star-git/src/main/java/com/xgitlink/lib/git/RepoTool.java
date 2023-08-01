@@ -899,7 +899,7 @@ public class RepoTool {
 	 * @param statTime 统计时间（用于统计分支提交次数的开始时间）
 	 * @return
 	 */
-	public static List<BranchVo> getBranchVoList(String repoPath, LocalDateTime statTime) {
+	public static List<BranchVo> getBranchVoList(String repoPath, LocalDateTime statTime, String searchName) {
 		List<BranchVo> branchList = new ArrayList<BranchVo>();
 		Git git = null;
 		RevWalk rw = null;
@@ -920,11 +920,18 @@ public class RepoTool {
 			Iterable<RevCommit> commits = null;
 			RevCommit lastCommit = null;
 			rw = new RevWalk(repository);
+			String branchName = null;
 			for (Ref ref : refList) {
+				branchName = ref.getName();
+				if(StringTool.isNotEmpty(searchName)) {
+					if(branchName.substring(branchName.lastIndexOf("/")+1).indexOf(searchName) == -1) {
+						continue;
+					}
+				}
 				branchVo = new BranchVo();
-				branchVo.setName(ref.getName());
+				branchVo.setName(branchName);
 				branchVo.setId(ref.getObjectId().getName());
-				if(StringTool.isNotEmpty(defaultBranchName) && defaultBranchName.equals(ref.getName())) {
+				if(StringTool.isNotEmpty(defaultBranchName) && defaultBranchName.equals(branchName)) {
 					branchVo.setDefault(true);
 				}
 				
@@ -935,7 +942,7 @@ public class RepoTool {
 				branchVo.setCreatorTime(DateTool.date2LocalDateTime(branchCreator.getWhen()));
                 
 				//获取最后一次提交的信息
-				commit = rw.parseCommit(repository.resolve(ref.getName()));
+				commit = rw.parseCommit(repository.resolve(branchName));
 				commits = git.log().add(commit).setMaxCount(1).call();
 				lastCommit = commits.iterator().next();
 				branchVo.setUpdateName(lastCommit.getCommitterIdent().getName());
@@ -982,7 +989,7 @@ public class RepoTool {
 		//syncUpstream("D:\\opt\\repo\\8047\\test1\\.git", "main", "D:/opt/repo/8048/test");
 		//createBranch("D:\\opt\\repo\\8048\\demo1\\.git", "test");
 //		deleteBranch("D:\\opt\\repo\\8048\\demo1\\.git", "test123");
-		System.out.println(getBranchVoList("D:\\opt\\repo\\8048\\demo1\\.git", LocalDateTime.now().minusMonths(1)));
+		System.out.println(getBranchVoList("D:\\opt\\repo\\8048\\demo1\\.git", LocalDateTime.now().minusMonths(1), "main"));
 	}
 
 }
