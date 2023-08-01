@@ -6,8 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +28,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.archive.ZipFormat;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
@@ -36,8 +40,10 @@ import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
+import com.xgitlink.lib.git.mo.BranchVo;
 import com.xgitlink.lib.git.mo.CommitVo;
 import com.xgitlink.lib.git.mo.RepoFileMo;
+import com.xingkong1983.star.core.tool.DateTool;
 import com.xingkong1983.star.core.tool.FileTool;
 import com.xingkong1983.star.core.tool.OsTool;
 import com.xingkong1983.star.core.tool.StringTool;
@@ -887,6 +893,76 @@ public class RepoTool {
 		return result;
 	}
 	
+	/**
+	 * 获取列表分支信息
+	 * @param repoPath
+	 * @param statTime 统计时间（用于统计分支提交次数的开始时间）
+	 * @return
+	 */
+	public static List<BranchVo> getBranchVoList(String repoPath, LocalDateTime statTime) {
+		List<BranchVo> branchList = new ArrayList<BranchVo>();
+		Git git = null;
+		RevWalk rw = null;
+		try {
+			git = openToGit(repoPath);
+			List<Ref> refList = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
+			Repository repository = git.getRepository();
+			BranchVo branchVo = null;
+			Instant since = null;
+			if(statTime == null) {
+				since = Instant.now().minus(1, ChronoUnit.MONTHS);
+			} else {
+				since = statTime.atZone(ZoneId.systemDefault()).toInstant();
+			}
+			PersonIdent branchCreator = null;
+			RevCommit commit = null;
+			Iterable<RevCommit> commits = null;
+			RevCommit lastCommit = null;
+			rw = new RevWalk(repository);
+			for (Ref ref : refList) {
+				branchVo = new BranchVo();
+				branchVo.setName(ref.getName());
+				branchVo.setId(ref.getObjectId().getName());
+				
+				// 获取分支的创建者信息
+				branchCreator = git.getRepository().parseCommit(ref.getObjectId()).getAuthorIdent();
+				branchVo.setCreatorName(branchCreator.getName());
+				branchVo.setCreatorEmail(branchCreator.getEmailAddress());
+				branchVo.setCreatorTime(DateTool.date2LocalDateTime(branchCreator.getWhen()));
+                
+				//获取最后一次提交的信息
+				commit = rw.parseCommit(repository.resolve(ref.getName()));
+				commits = git.log().add(commit).setMaxCount(1).call();
+				lastCommit = commits.iterator().next();
+				branchVo.setUpdateName(lastCommit.getCommitterIdent().getName());
+				branchVo.setUpdateEmail(lastCommit.getCommitterIdent().getEmailAddress());
+				branchVo.setUpdateTime(DateTool.date2LocalDateTime(lastCommit.getCommitterIdent().getWhen()));
+				
+				// 统计提交次数
+				commits = git.log().add(commit).call();
+                int commitCount = 0;
+                for (RevCommit revCommit : commits) {
+                    // 如果提交时间在统计时间范围内，则计数器加一
+                    if (revCommit.getCommitTime() >= since.getEpochSecond()) {
+                    	commitCount++;
+                    } else {
+                        // 如果提交时间早于统计时间范围，则退出循环
+                        break;
+                    }
+                }
+                branchVo.setCommitCount(commitCount);
+				branchList.add(branchVo);
+			}
+		} catch (GitAPIException | IOException e) {
+			log.error("获取不到分支列表", e);
+		} finally {
+			OsTool.close(rw);
+			OsTool.close(git);
+		}
+
+		return branchList;
+	}
+	
 	public static void main(String[] args) {
 		//System.out.println(packZipFile("D:/opt/repo/8047/demo", "main", "D:/test/cache/"));
 		
@@ -900,8 +976,9 @@ public class RepoTool {
 //		});
 //		System.out.println(getDefaultBranchName("D:/opt/repo/8047/test/.git"));
 		//syncUpstream("D:\\opt\\repo\\8047\\test1\\.git", "main", "D:/opt/repo/8048/test");
-		createBranch("D:\\opt\\repo\\8048\\demo1\\.git", "test");
+		//createBranch("D:\\opt\\repo\\8048\\demo1\\.git", "test");
 //		deleteBranch("D:\\opt\\repo\\8048\\demo1\\.git", "test123");
+		System.out.println(getBranchVoList("D:\\opt\\repo\\8048\\demo1\\.git", LocalDateTime.now().minusMonths(1)));
 	}
 
 }
